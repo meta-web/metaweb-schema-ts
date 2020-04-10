@@ -1,0 +1,9 @@
+use SingleNamespace;
+// Single-line comment
+use My.Nested.Namespace;
+
+/*
+ * Multi
+Line
+Strange
+	Comment */use Hello._World;

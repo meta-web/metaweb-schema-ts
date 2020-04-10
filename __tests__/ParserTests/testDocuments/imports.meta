@@ -1,0 +1,9 @@
+import "someResource";
+// Single-line comment
+import "anotherresource";
+
+/*
+ * Multi
+Line
+Strange
+	Comment */import "hello.meta";

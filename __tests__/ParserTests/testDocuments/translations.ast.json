@@ -1,0 +1,274 @@
+{
+  "n": "d",
+  "im": [],
+  "ns": [
+    {
+      "n": "ns",
+      "id": [
+        "__default__"
+      ],
+      "cm": null,
+      "ns": [],
+      "us": [],
+      "s": [],
+      "t": [],
+      "l": [
+        {
+          "n": "lg",
+          "id": "en_US",
+          "t": [
+            {
+              "n": "lt",
+              "id": [
+                "rootTerm"
+              ],
+              "p": [],
+              "v": {
+                "n": "c",
+                "t": {
+                  "n": "tv",
+                  "t": "s"
+                },
+                "v": "TermEN",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 2,
+                      "col": 14
+                    },
+                    "end": {
+                      "line": 2,
+                      "col": 22
+                    }
+                  }
+                }
+              },
+              "parseInfo": {
+                "range": {
+                  "start": {
+                    "line": 2,
+                    "col": 2
+                  },
+                  "end": {
+                    "line": 2,
+                    "col": 23
+                  }
+                }
+              }
+            }
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 1,
+                "col": 12
+              },
+              "end": {
+                "line": 3,
+                "col": 1
+              }
+            }
+          }
+        },
+        {
+          "n": "lg",
+          "id": "cs_CZ",
+          "t": [
+            {
+              "n": "lt",
+              "id": [
+                "nested",
+                "term"
+              ],
+              "p": [],
+              "v": {
+                "n": "c",
+                "t": {
+                  "n": "tv",
+                  "t": "s"
+                },
+                "v": "TermCZ",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 6,
+                      "col": 17
+                    },
+                    "end": {
+                      "line": 6,
+                      "col": 25
+                    }
+                  }
+                }
+              },
+              "parseInfo": {
+                "range": {
+                  "start": {
+                    "line": 6,
+                    "col": 9
+                  },
+                  "end": {
+                    "line": 6,
+                    "col": 26
+                  }
+                }
+              }
+            }
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 5,
+                "col": 12
+              },
+              "end": {
+                "line": 7,
+                "col": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "n": "ns",
+      "id": [
+        "NS"
+      ],
+      "cm": null,
+      "ns": [],
+      "us": [],
+      "s": [],
+      "t": [],
+      "l": [
+        {
+          "n": "lg",
+          "id": "en_US",
+          "t": [
+            {
+              "n": "lt",
+              "id": [
+                "rootTerm"
+              ],
+              "p": [],
+              "v": {
+                "n": "c",
+                "t": {
+                  "n": "tv",
+                  "t": "s"
+                },
+                "v": "TermEN",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 12,
+                      "col": 15
+                    },
+                    "end": {
+                      "line": 12,
+                      "col": 23
+                    }
+                  }
+                }
+              },
+              "parseInfo": {
+                "range": {
+                  "start": {
+                    "line": 12,
+                    "col": 3
+                  },
+                  "end": {
+                    "line": 13,
+                    "col": 1
+                  }
+                }
+              }
+            }
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 11,
+                "col": 13
+              },
+              "end": {
+                "line": 13,
+                "col": 2
+              }
+            }
+          }
+        },
+        {
+          "n": "lg",
+          "id": "cs_CZ",
+          "t": [
+            {
+              "n": "lt",
+              "id": [
+                "nested",
+                "term"
+              ],
+              "p": [],
+              "v": {
+                "n": "c",
+                "t": {
+                  "n": "tv",
+                  "t": "s"
+                },
+                "v": "TermCZ",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 16,
+                      "col": 18
+                    },
+                    "end": {
+                      "line": 16,
+                      "col": 26
+                    }
+                  }
+                }
+              },
+              "parseInfo": {
+                "range": {
+                  "start": {
+                    "line": 16,
+                    "col": 10
+                  },
+                  "end": {
+                    "line": 17,
+                    "col": 1
+                  }
+                }
+              }
+            }
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 15,
+                "col": 13
+              },
+              "end": {
+                "line": 17,
+                "col": 2
+              }
+            }
+          }
+        }
+      ],
+      "parseInfo": {
+        "range": {
+          "start": {
+            "line": 9,
+            "col": 10
+          },
+          "end": {
+            "line": 19,
+            "col": 1
+          }
+        }
+      }
+    }
+  ]
+}

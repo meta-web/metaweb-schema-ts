@@ -1,0 +1,44 @@
+{
+  "name": "metaweb-schema-ts",
+  "version": "1.0.0",
+  "description": "META Schema parser, analyzer, compiler and runtime.",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
+  "scripts": {
+    "test": "mocha -r ts-node/register __tests__/* __tests__/**/*",
+    "test-one": "mocha -r ts-node/register __tests__/* __tests__/**/* --grep $1",
+    "build": "tsc",
+    "doc": "typedoc --out ./doc --mode file ./src",
+    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}' '__tests__/**/*.{ts,tsx}'",
+    "prepublishOnly": "npm run build && npm run test && npm run doc",
+    "pretest": "npm run lint"
+  },
+  "keywords": [
+    "metaweb",
+    "meta web",
+    "meta model",
+    "metaweb model",
+    "metaapi",
+    "meta api",
+    "meta schema"
+  ],
+  "author": "Jiri Hybek <jiri@hybek.cz>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "moo": "^0.5.1"
+  },
+  "devDependencies": {
+    "@types/chai": "4.2.11",
+    "@types/chai-subset": "^1.3.3",
+    "@types/mocha": "7.0.2",
+    "@types/moo": "^0.5.3",
+    "@types/node": "^13.11.0",
+    "chai": "4.2.0",
+    "chai-subset": "^1.6.0",
+    "mocha": "7.1.1",
+    "ts-node": "8.8.1",
+    "tslint": "6.1.0",
+    "typedoc": "0.17.3",
+    "typescript": "3.8.3"
+  }
+}

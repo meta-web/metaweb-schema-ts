@@ -1,0 +1,88 @@
+{
+  "n": "d",
+  "im": [],
+  "ns": [
+    {
+      "n": "ns",
+      "id": [
+        "__default__"
+      ],
+      "cm": null,
+      "ns": [],
+      "us": [],
+      "s": [],
+      "t": []
+    },
+    {
+      "n": "ns",
+      "id": [
+        "Root"
+      ],
+      "cm": null,
+      "ns": [
+        {
+          "n": "ns",
+          "id": [
+            "Nested"
+          ],
+          "cm": null,
+          "ns": [
+            {
+              "n": "ns",
+              "id": [
+                "NestedNested"
+              ],
+              "cm": null,
+              "ns": [],
+              "us": [],
+              "s": [],
+              "t": [],
+              "parseInfo": {
+                "range": {
+                  "start": {
+                    "line": 8,
+                    "col": 12
+                  },
+                  "end": {
+                    "line": 11,
+                    "col": 3
+                  }
+                }
+              }
+            }
+          ],
+          "us": [],
+          "s": [],
+          "t": [],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 6,
+                "col": 11
+              },
+              "end": {
+                "line": 13,
+                "col": 2
+              }
+            }
+          }
+        }
+      ],
+      "us": [],
+      "s": [],
+      "t": [],
+      "parseInfo": {
+        "range": {
+          "start": {
+            "line": 4,
+            "col": 10
+          },
+          "end": {
+            "line": 15,
+            "col": 1
+          }
+        }
+      }
+    }
+  ]
+}

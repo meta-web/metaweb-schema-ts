@@ -1,0 +1,76 @@
+{
+  "n": "d",
+  "im": [],
+  "ns": [
+    {
+      "n": "ns",
+      "id": [
+        "__default__"
+      ],
+      "cm": null,
+      "ns": [],
+      "us": [
+        {
+          "n": "us",
+          "ns": [
+            "SingleNamespace"
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 1,
+                "col": 4
+              },
+              "end": {
+                "line": 1,
+                "col": 20
+              }
+            }
+          }
+        },
+        {
+          "n": "us",
+          "ns": [
+            "My",
+            "Nested",
+            "Namespace"
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 3,
+                "col": 4
+              },
+              "end": {
+                "line": 3,
+                "col": 24
+              }
+            }
+          }
+        },
+        {
+          "n": "us",
+          "ns": [
+            "Hello",
+            "_World"
+          ],
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 9,
+                "col": 15
+              },
+              "end": {
+                "line": 9,
+                "col": 28
+              }
+            }
+          }
+        }
+      ],
+      "s": [],
+      "t": [],
+      "l": []
+    }
+  ]
+}

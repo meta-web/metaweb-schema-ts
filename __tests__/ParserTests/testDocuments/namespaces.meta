@@ -1,0 +1,16 @@
+/*
+ * Comment
+ */
+namespace Root {
+	// Comment
+	namespace Nested {
+		/* Comment */ // Comment
+		namespace NestedNested {
+			// Comment
+			/* Comment */
+		}
+		// Comment
+	}
+	/* Comment */
+}
+/* Comment */

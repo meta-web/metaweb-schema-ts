@@ -1,0 +1,874 @@
+{
+  "n": "d",
+  "im": [],
+  "ns": [
+    {
+      "n": "ns",
+      "id": [
+        "__default__"
+      ],
+      "cm": null,
+      "ns": [],
+      "us": [],
+      "s": [],
+      "t": [
+        {
+          "n": "t",
+          "id": "MyType1",
+          "g": null,
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "String",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 2,
+                  "col": 16
+                },
+                "end": {
+                  "line": 2,
+                  "col": 16
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 2,
+                "col": 5
+              },
+              "end": {
+                "line": 2,
+                "col": 22
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType2",
+          "g": [],
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "String",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 5,
+                  "col": 19
+                },
+                "end": {
+                  "line": 5,
+                  "col": 19
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 5,
+                "col": 5
+              },
+              "end": {
+                "line": 5,
+                "col": 25
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType3",
+          "g": null,
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "AnotherType",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 8,
+                  "col": 16
+                },
+                "end": {
+                  "line": 8,
+                  "col": 29
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 8,
+                "col": 5
+              },
+              "end": {
+                "line": 8,
+                "col": 30
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType4",
+          "g": null,
+          "t": {
+            "n": "tu",
+            "t": [
+              {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "A",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 11,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 11,
+                      "col": 16
+                    }
+                  }
+                }
+              },
+              {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "B",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 11,
+                      "col": 18
+                    },
+                    "end": {
+                      "line": 11,
+                      "col": 18
+                    }
+                  }
+                }
+              }
+            ],
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 11,
+                  "col": 15
+                },
+                "end": {
+                  "line": 11,
+                  "col": 18
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 11,
+                "col": 5
+              },
+              "end": {
+                "line": 11,
+                "col": 19
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType5",
+          "g": null,
+          "t": {
+            "n": "ti",
+            "t": [
+              {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "A",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 14,
+                      "col": 16
+                    },
+                    "end": {
+                      "line": 14,
+                      "col": 16
+                    }
+                  }
+                }
+              },
+              {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "B",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 14,
+                      "col": 18
+                    },
+                    "end": {
+                      "line": 14,
+                      "col": 18
+                    }
+                  }
+                }
+              }
+            ],
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 14,
+                  "col": 15
+                },
+                "end": {
+                  "line": 14,
+                  "col": 18
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 14,
+                "col": 5
+              },
+              "end": {
+                "line": 14,
+                "col": 19
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType6",
+          "g": [],
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "C",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 17,
+                  "col": 19
+                },
+                "end": {
+                  "line": 17,
+                  "col": 22
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 17,
+                "col": 5
+              },
+              "end": {
+                "line": 17,
+                "col": 23
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType7",
+          "g": [],
+          "t": {
+            "n": "tu",
+            "t": [
+              {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "C",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 18,
+                      "col": 32
+                    },
+                    "end": {
+                      "line": 18,
+                      "col": 35
+                    }
+                  }
+                }
+              },
+              {
+                "n": "ti",
+                "t": [
+                  {
+                    "n": "rt",
+                    "p": [],
+                    "ns": [],
+                    "r": "D",
+                    "parseInfo": {
+                      "range": {
+                        "start": {
+                          "line": 18,
+                          "col": 37
+                        },
+                        "end": {
+                          "line": 18,
+                          "col": 41
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "n": "tu",
+                    "t": [
+                      {
+                        "n": "rt",
+                        "p": [],
+                        "ns": [],
+                        "r": "E",
+                        "parseInfo": {
+                          "range": {
+                            "start": {
+                              "line": 18,
+                              "col": 47
+                            },
+                            "end": {
+                              "line": 18,
+                              "col": 48
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "n": "tu",
+                        "t": [
+                          {
+                            "n": "rt",
+                            "p": [],
+                            "ns": [],
+                            "r": "F",
+                            "parseInfo": {
+                              "range": {
+                                "start": {
+                                  "line": 18,
+                                  "col": 50
+                                },
+                                "end": {
+                                  "line": 18,
+                                  "col": 50
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "n": "rt",
+                            "p": [],
+                            "ns": [],
+                            "r": "G",
+                            "parseInfo": {
+                              "range": {
+                                "start": {
+                                  "line": 18,
+                                  "col": 53
+                                },
+                                "end": {
+                                  "line": 18,
+                                  "col": 54
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "parseInfo": {
+                          "range": {
+                            "start": {
+                              "line": 18,
+                              "col": 49
+                            },
+                            "end": {
+                              "line": 18,
+                              "col": 54
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "parseInfo": {
+                      "range": {
+                        "start": {
+                          "line": 18,
+                          "col": 46
+                        },
+                        "end": {
+                          "line": 18,
+                          "col": 54
+                        }
+                      }
+                    }
+                  }
+                ],
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 18,
+                      "col": 36
+                    },
+                    "end": {
+                      "line": 18,
+                      "col": 55
+                    }
+                  }
+                }
+              }
+            ],
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 18,
+                  "col": 31
+                },
+                "end": {
+                  "line": 18,
+                  "col": 55
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 18,
+                "col": 5
+              },
+              "end": {
+                "line": 18,
+                "col": 56
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType8",
+          "g": [],
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "SimpleType",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 19,
+                  "col": 29
+                },
+                "end": {
+                  "line": 19,
+                  "col": 29
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 19,
+                "col": 5
+              },
+              "end": {
+                "line": 19,
+                "col": 39
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType9",
+          "g": [],
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "AnotherType",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 20,
+                  "col": 32
+                },
+                "end": {
+                  "line": 20,
+                  "col": 45
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 20,
+                "col": 5
+              },
+              "end": {
+                "line": 20,
+                "col": 46
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType10",
+          "g": null,
+          "t": {
+            "n": "ts",
+            "p": {},
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 23,
+                  "col": 17
+                },
+                "end": {
+                  "line": 23,
+                  "col": 18
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 23,
+                "col": 5
+              },
+              "end": {
+                "line": 23,
+                "col": 19
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType11",
+          "g": [],
+          "t": {
+            "n": "ts",
+            "p": {
+              "prop1": {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "String",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 25,
+                      "col": 10
+                    },
+                    "end": {
+                      "line": 25,
+                      "col": 10
+                    }
+                  }
+                }
+              },
+              "prop2": {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "Number",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 26,
+                      "col": 10
+                    },
+                    "end": {
+                      "line": 26,
+                      "col": 18
+                    }
+                  }
+                }
+              },
+              "prop3": {
+                "n": "tu",
+                "t": [
+                  {
+                    "n": "rt",
+                    "p": [],
+                    "ns": [],
+                    "r": "String",
+                    "parseInfo": {
+                      "range": {
+                        "start": {
+                          "line": 27,
+                          "col": 10
+                        },
+                        "end": {
+                          "line": 27,
+                          "col": 10
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "n": "rt",
+                    "p": [],
+                    "ns": [],
+                    "r": "Number",
+                    "parseInfo": {
+                      "range": {
+                        "start": {
+                          "line": 27,
+                          "col": 17
+                        },
+                        "end": {
+                          "line": 27,
+                          "col": 17
+                        }
+                      }
+                    }
+                  }
+                ],
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 27,
+                      "col": 9
+                    },
+                    "end": {
+                      "line": 27,
+                      "col": 17
+                    }
+                  }
+                }
+              }
+            },
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 24,
+                  "col": 20
+                },
+                "end": {
+                  "line": 28,
+                  "col": 1
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 24,
+                "col": 5
+              },
+              "end": {
+                "line": 28,
+                "col": 2
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType12",
+          "g": null,
+          "t": {
+            "n": "rt",
+            "p": [],
+            "ns": [],
+            "r": "String",
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 31,
+                  "col": 45
+                },
+                "end": {
+                  "line": 31,
+                  "col": 51
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 31,
+                "col": 5
+              },
+              "end": {
+                "line": 31,
+                "col": 63
+              }
+            }
+          }
+        },
+        {
+          "n": "t",
+          "id": "MyType13",
+          "g": null,
+          "t": {
+            "n": "tu",
+            "t": [
+              {
+                "n": "rt",
+                "p": [],
+                "ns": [],
+                "r": "String",
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 34,
+                      "col": 2
+                    },
+                    "end": {
+                      "line": 34,
+                      "col": 8
+                    }
+                  }
+                }
+              },
+              {
+                "n": "tu",
+                "t": [
+                  {
+                    "n": "rt",
+                    "p": [],
+                    "ns": [],
+                    "r": "Number",
+                    "parseInfo": {
+                      "range": {
+                        "start": {
+                          "line": 35,
+                          "col": 29
+                        },
+                        "end": {
+                          "line": 35,
+                          "col": 35
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "n": "ti",
+                    "t": [
+                      {
+                        "n": "rt",
+                        "p": [],
+                        "ns": [],
+                        "r": "AnotherType",
+                        "parseInfo": {
+                          "range": {
+                            "start": {
+                              "line": 37,
+                              "col": 17
+                            },
+                            "end": {
+                              "line": 37,
+                              "col": 28
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "n": "rt",
+                        "p": [],
+                        "ns": [],
+                        "r": "OtherType",
+                        "parseInfo": {
+                          "range": {
+                            "start": {
+                              "line": 37,
+                              "col": 31
+                            },
+                            "end": {
+                              "line": 37,
+                              "col": 40
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "parseInfo": {
+                      "range": {
+                        "start": {
+                          "line": 37,
+                          "col": 16
+                        },
+                        "end": {
+                          "line": 38,
+                          "col": 15
+                        }
+                      }
+                    }
+                  }
+                ],
+                "parseInfo": {
+                  "range": {
+                    "start": {
+                      "line": 35,
+                      "col": 28
+                    },
+                    "end": {
+                      "line": 38,
+                      "col": 16
+                    }
+                  }
+                }
+              }
+            ],
+            "parseInfo": {
+              "range": {
+                "start": {
+                  "line": 34,
+                  "col": 1
+                },
+                "end": {
+                  "line": 38,
+                  "col": 16
+                }
+              }
+            }
+          },
+          "parseInfo": {
+            "range": {
+              "start": {
+                "line": 33,
+                "col": 5
+              },
+              "end": {
+                "line": 38,
+                "col": 17
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

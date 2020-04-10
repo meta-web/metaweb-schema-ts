@@ -1,0 +1,19 @@
+translation en_US {
+	rootTerm => "TermEN";
+}
+
+translation cs_CZ {
+	nested.term => "TermCZ";
+}
+
+namespace NS {
+
+	translation en_US {
+		rootTerm => "TermEN";
+	}
+
+	translation cs_CZ {
+		nested.term => "TermCZ";
+	}
+
+}

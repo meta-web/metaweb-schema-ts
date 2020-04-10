@@ -1,0 +1,38 @@
+// Simple alias type
+type MyType1 = String;
+
+// Simple type with generics
+type MyType2<X> = String;
+
+// Simple type with params
+type MyType3 = AnotherType<X>;
+
+// Union type
+type MyType4 = A|B;
+
+// Inheritance type
+type MyType5 = A&B;
+
+// More advanced combinations
+type MyType6<A> = C<A>;
+type MyType7<A, B extends C> = C<A>|D <B> & ( E |F| G );
+type MyType8<B extends C> = SimpleType;
+type MyType9<B extends C, D> = AnotherType<T>;
+
+// Struct type
+type MyType10 = {};
+type MyType11<T> = {
+	prop1 : String;
+	prop2 : Number<T>;
+	prop3 : String|Number;
+};
+
+// Comment tests
+type MyType12 /* comment */ = /* comment */ String /*comment*/;
+
+type MyType13 = // Single comment
+	String // Another comment
+	/* Place comment here */ | Number // Comment
+	| /* Comment */ ( // Comment
+		/* Comment */ AnotherType & OtherType // Comment
+	/* Comment */ );

@@ -1,0 +1,324 @@
+/*
+ * Example of simple META Schema todo-app
+ *
+ * @author Jiri Hybek <jiri@hybek.cz>
+ */
+
+/*
+This document consists of the following parts.
+
+1) Translations
+	We can declare terms for different languages straight out of the box.
+
+2) Data model
+	Maps API data to a semantic representation.
+	We can use this model as a standalone interface to interact with an API.
+
+3) UI
+	Declares how an automatically generated UI will look like.
+	Uses data model which is annotated so we don't need to repeat
+	elements in order to display them in the UI.
+*/
+
+// Use built-in schemas
+use Meta;
+
+/*
+ * Our demo application
+ */
+namespace MyApp {
+
+	/*
+	 * Declare translations
+	 *
+	 * META Schema has built-in support for translations.
+	 */
+	translation en_US {
+		AppTitle => "My Application";
+		Welcome => "This is a simple to-do app.";
+		NewTodo.Title => "Add new task";
+		NewTodo.Label => "Task name";
+		NewTodo.Hint => "Describe your task...";
+		NewTodo.Button => "Add";
+		ItemTodo.Complete.Label => "Complete";
+		ItemTodo.Text.Label => "Task name";
+		ItemTodo.Text.Hint => "Describe your task...";
+		ListTodo.Add.Label => "Add task";
+		ListTodo.Remove.Label => "Remove";
+	}
+
+	translation cs_CZ {
+		AppTitle => "Moje aplikace";
+		Welcome => "Toto je jednoduchá to-do aplikace.";
+		NewTodo.Title => "Přidat nový úkol";
+		NewTodo.Label => "Název úkolu";
+		NewTodo.Hint => "Popište váš úkol...";
+		NewTodo.Button => "Přidat";
+		ItemTodo.Complete.Label => "Hotovo";
+		ItemTodo.Text.Label => "Název úkolu";
+		ItemTodo.Text.Hint => "Popište váš úkol...";
+		ListTodo.Add.Label => "Přidat úkol";
+		ListTodo.Remove.Label => "Smazat";
+	}
+
+	/*
+	 * Declare types
+	 */
+	type TodoItem = {
+		id: UUID.Type;
+		complete: Boolean;
+		text: String;
+	};
+
+	type TodoOpAdd = {
+		id: UUID.Type;
+		text: String;
+		complete: Boolean;
+	};
+
+	type TodoOpSetComplete = {
+		complete: Boolean;
+	};
+
+	type TodoOpSetText = {
+		text: String;
+	};
+
+	type TodoList = List<TodoItem>;
+
+	/*
+	 * Data model field schemas
+	 *
+	 * We define them as separate schemas in order to provide actions
+	 * which call API immediately after a value is changed. This is
+	 * used for an example of an interactive UI, eg. we don't have any
+	 * save button.
+	 */
+	schema TodoModel_ItemComplete(
+		dataSource: HTTP.GetJSONResponse,
+		itemId: UUID.Type,
+		value: Boolean
+	) {
+		override action set(
+			newValue: Boolean
+		) {
+			let res = HTTP.PutJSON<TodoOpSetComplete>(
+				url: `/api/todo/${@itemId}/complete`,
+				data: {
+					complete: @newValue
+				}
+			);
+
+			// Update value so the change is reflected immediately
+			// and we don't need to wait for API response
+			invoke this#set(@newValue);
+
+			// Refresh data source in order to get actual data
+			invoke @dataSource#refresh();
+		}
+
+		return Model.Boolean(
+			label: $ItemTodo.Complete.Label$,
+			value: @value
+		);
+	}
+
+	schema TodoModel_ItemText(
+		dataSource: HTTP.GetJSONResponse,
+		itemId: UUID.Type,
+		value: String
+	) {
+		override action set(
+			newValue: Boolean
+		) {
+			let res = HTTP.PutJSON<TodoOpSetComplete>(
+				url: `/api/todo/${@itemId}/text`,
+				data: {
+					text: @newValue
+				}
+			);
+
+			// Update value so the change is reflected immediately
+			// and we don't need to wait for API response
+			invoke this#set(@newValue);
+
+			// Refresh data source in order to get actual data
+			invoke @dataSource#refresh();
+		}
+
+		return Model.Text(
+			label: $ItemTodo.Text.Label$,
+			hint: $ItemTodo.Text.Hint$,
+			required: true,
+			maxLength: 255,
+			value: @value
+		);
+	}
+
+	/**
+	 * Schema transforms data from API into a semantic model representation
+	 */
+	schema TodoModel {
+		// Declare items and fetch initial values from API
+		let items = HTTP.GetJSON<TodoList>(url: "/api/todo");
+
+		// Transform items into a model
+		let model = Model.List(
+			items: map(
+				items: todos,
+				return: fn (item: TodoItem) => Model.Struct({
+					complete: TodoModel_ItemComplete(
+						dataSource: items,
+						id: item.id,
+						value: item.complete
+					),
+					text: TodoModel_ItemText(
+						dataSource: items,
+						id: item.id,
+						value: item.text
+					)
+				})
+			),
+			addAction: {
+				// Here we can provide an action configuration so UI knows what to display
+				title: $ListTodo.Add.Label$,
+				icon: "mdi/plus",
+				// We don't want to display this action in the UI automatically because we have
+				// a custom section for that. But still add action will work as a data interface
+				// and we have it documented for humans.
+				hidden: true
+			},
+			removeAction: {
+				// Here we can provide an action configuration so UI knows what to display
+				title: $ListTodo.Remove.Label$,
+				icon: "mdi/delete"
+			}
+		);
+
+		override action add(
+			item: TodoItem
+		) {
+			let res = HTTP.PostJSON<TodoOpAdd>(
+				url: `/api/todo`,
+				data: @item
+			);
+
+			// Add value so the change is reflected immediately
+			// and we don't need to wait for API response
+			invoke model#add(@item);
+
+			// Refresh data source in order to get actual data
+			invoke items#refresh();	
+		}
+
+		override action remove(
+			item: TodoItem
+		) {
+			let res = HTTP.Delete(
+				url: `/api/todo/${@itemId}`
+			);
+
+			// Remove value so the change is reflected immediately
+			// and we don't need to wait for API response
+			invoke model#remove(@item);
+
+			// Refresh data source in order to get actual data
+			invoke items#refresh();
+		}
+
+		return model;
+	}
+
+	/*
+	 * UI Section
+	 */
+
+	/**
+	 * Main View - our application entry point
+	 */
+	schema MainView {
+
+		return UI.View(
+			title: $AppTitle$,
+			icon: "mdi/apps",
+			Header(),
+			Contents(),
+			Footer()
+		);
+
+	}
+
+	/**
+	 * Application header
+	 */
+	schema Header {
+
+		return UI.Header(
+			title: $Welcome$
+		);
+
+	}
+
+	/**
+	 * Some footer stuff
+	 */
+	schema Footer {
+
+		return UI.Text("Here goes the footer.");
+
+	}
+
+	/**
+	 * UI part for adding new todos
+	 */
+	schema NewTodo(
+		model: TodoModel
+	) {
+
+		// Define new task model with validation rules
+		let newTodo = Model.Text(
+			label: $NewTodo.Label$,
+			hint: $NewTodo.Hint$,
+			maxLength: 255
+		);
+
+		// Define add action which will be called by an action button
+		action Add {
+			invoke model#add({
+				id: UUID.v4(),
+				text: newTodo.value,
+				complete: false
+			});
+		}
+
+		// Return UI group
+		return UI.Group.Row(
+			title: $NewTodo.Title$,
+			newTodo,
+			Action(
+				title: $NewTodo.Button$,
+				icon: "mdi/plus",
+				invoke: this#add
+			)
+		);
+
+	}
+
+	/**
+	 * Our application contents
+	 */
+	schema Contents {
+		// Get todo model
+		let model = TodoModel();
+		
+		return UI.Section(
+			// New todo section
+			NewTodo(model),
+			// UI.List is able to consume Model.List
+			// and display it's elements automatically
+			UI.List(model)
+		);
+
+	}
+
+}

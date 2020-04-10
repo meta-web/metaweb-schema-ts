@@ -1,0 +1,15 @@
+# Visual Studio Code
+*.code-workspace
+.vscode/*
+
+# OSX
+.DS_Store
+
+# Node
+/node_modules
+
+# Build
+/dist
+
+# Typedoc
+/docs/typedoc
