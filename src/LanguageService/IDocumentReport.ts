@@ -10,7 +10,7 @@
  * See LICENSE file distributed with this source code for more information.
  */
 
-import { ISchemaDocument } from "../Schema";
+import { IASTSchemaDocument } from "../AST";
 import { IDocumentError } from "../Shared/IDocumentError";
 import { ITokenDescriptorList } from "../Parser/ITokenDescriptor";
 import { IDocumentPosition } from "../Shared/IDocumentPosition";
@@ -26,7 +26,7 @@ export interface IDocumentReport {
 	source: string;
 
 	/** Parsed document node */
-	documentNode: ISchemaDocument;
+	documentNode: IASTSchemaDocument;
 
 	/** Document errors */
 	errors: Array<IDocumentError>;

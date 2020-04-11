@@ -25,6 +25,8 @@ export const keywords = {
 	extends: "extends",
 	let: "let",
 	state: "state",
+	propagate: "propagate",
+	inherit: "inherit",
 	action: "action",
 	override: "override",
 	update: "update",
@@ -35,10 +37,12 @@ export const keywords = {
 	then: "then",
 	else: "else",
 	is: "is",
+	not: "not",
 	and: "and",
 	or: "or",
 	true: "true",
-	false: "false"
+	false: "false",
+	null: "null"
 };
 
 /**
@@ -147,3 +151,16 @@ export const builtinSchemas = {
 	modulo: { ns: [ "Meta", "Arithmetic" ], id: "modulo" },
 	concat: { ns: [ "Meta" ], id: "concat" }
 };
+
+/**
+ * Built-in types
+ */
+export const builtinTypes = {
+	String: { ns: ["Meta"], id: "String" },
+	Number: { ns: ["Meta"], id: "Number" },
+	Integer: { ns: ["Meta"], id: "Integer" },
+	Float: { ns: ["Meta"], id: "Float" },
+	Boolean: { ns: ["Meta"], id: "Boolean" },
+	Date: { ns: ["Meta"], id: "Date" },
+	Null: { ns: ["Meta"], id: "Null" }
+}

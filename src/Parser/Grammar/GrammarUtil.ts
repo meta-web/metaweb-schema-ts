@@ -740,3 +740,36 @@ export function startsWith(
 	};
 
 }
+
+/**
+ * Try to parse code, if returns null, token position is restored.
+ *
+ * @param parser Parser
+ */
+export function tryParse(parser: IParseFunction) {
+
+	return (ctx: IParseContext) => {
+
+		const startPos = Parser.getTokenPosition();
+		Parser.setFlushErrors(false);
+
+		const res = parser(ctx);
+
+		if (res === null || res === false) {
+
+			Parser.setTokenPosition(startPos);
+			Parser.clearErrorBuffer();
+			Parser.setFlushErrors(true);
+			return null;
+
+		} else {
+
+			Parser.flushErrors();
+			Parser.setFlushErrors(true);
+			return res;
+
+		}
+
+	};
+
+}

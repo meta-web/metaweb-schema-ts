@@ -28,20 +28,23 @@ export class Parser {
 	/** Lexer instance */
 	private static lexer: Moo.Lexer = Moo.states(lexerStates);
 
-	/** Previous token */
-	private static prevToken: Moo.Token;
+	/** Token buffer */
+	private static tokenBuffer: Array<Moo.Token>;
 
-	/** Current token */
-	private static currentToken: Moo.Token;
-
-	/** Next token */
-	private static nextToken: Moo.Token;
+	/** Current token position */
+	private static tokenPos: number;
 
 	/** Token descriptors - for debugging and intellisense */
 	private static tokenDescriptors: ITokenDescriptorList;
 
+	/** Buffer of errors */
+	private static errorBuffer: Array<IDocumentError>;
+
 	/** Errors */
 	private static errors: Array<IDocumentError>;
+
+	/** If to flush errors immediately */
+	private static flushErrorsImmediately: boolean;
 
 	/** Parse table - for debugging */
 	private static parseTable: Array<IParseTableEntry>;
@@ -51,11 +54,12 @@ export class Parser {
 	 */
 	public static reset() {
 
-		Parser.prevToken = null;
-		Parser.currentToken = null;
-		Parser.nextToken = null;
+		Parser.tokenBuffer = [];
+		Parser.tokenPos = -1;
 		Parser.tokenDescriptors = [];
+		Parser.errorBuffer = [];
 		Parser.errors = [];
+		Parser.flushErrorsImmediately = true;
 		Parser.parseTable = [];
 
 	}
@@ -71,7 +75,7 @@ export class Parser {
 		Parser.reset();
 
 		Parser.lexer.reset(source);
-		Parser.nextToken = Parser.lexer.next();
+		this.getNextToken();
 
 		return ParseDocument({});
 
@@ -88,7 +92,29 @@ export class Parser {
 		Parser.reset();
 
 		Parser.lexer.reset(source);
-		Parser.nextToken = Parser.lexer.next();
+		this.getNextToken();
+
+	}
+
+	/**
+	 * Tries to return a next lexer token
+	 */
+	public static getNextToken() {
+
+		try {
+
+			if (Parser.tokenPos >= Parser.tokenBuffer.length - 1) {
+				Parser.tokenBuffer.push(Parser.lexer.next());
+			}
+
+			return Parser.tokenBuffer[Parser.tokenPos + 1];
+
+		} catch (err) {
+
+			this.addError(DOC_ERROR_SEVERITY.ERROR, "Unexpected token", "Invalid syntax.");
+			return null;
+
+		}
 
 	}
 
@@ -97,7 +123,31 @@ export class Parser {
 	 */
 	public static getToken() {
 
-		return Parser.currentToken;
+		return Parser.tokenBuffer[Parser.tokenPos];
+
+	}
+
+	/**
+	 * Returns previous token
+	 */
+	public static getPrevToken() {
+
+		if (Parser.tokenPos > 0) {
+			return Parser.tokenBuffer[Parser.tokenPos - 1];
+		} else {
+			return null;
+		}
+
+	}
+
+	/**
+	 * Move token forward
+	 */
+	public static move() {
+
+		if (Parser.tokenPos < Parser.tokenBuffer.length - 1) {
+			Parser.tokenPos++;
+		}
 
 	}
 
@@ -157,8 +207,8 @@ export class Parser {
 	 */
 	public static addNextTokenDescriptor(rule: IParseMatchRule, addCompletition: boolean = true) {
 
-		if (Parser.nextToken) {
-			Parser.addTokenDescriptor(Parser.nextToken, rule, addCompletition);
+		if (Parser.getNextToken()) {
+			Parser.addTokenDescriptor(Parser.getNextToken(), rule, addCompletition);
 		}
 
 	}
@@ -170,26 +220,8 @@ export class Parser {
 	 */
 	public static addCurrentTokenDescriptor(rule: IParseMatchRule, addCompletition: boolean = true) {
 
-		if (Parser.currentToken) {
-			Parser.addTokenDescriptor(Parser.currentToken, rule, addCompletition);
-		}
-
-	}
-
-	/**
-	 * Tries to return a next lexer token
-	 */
-	private static getNextLexerToken() {
-
-		try {
-
-			return Parser.lexer.next();
-
-		} catch (err) {
-
-			this.addError(DOC_ERROR_SEVERITY.ERROR, "Unexpected token", "Invalid syntax.");
-			return null;
-
+		if (Parser.getToken()) {
+			Parser.addTokenDescriptor(Parser.getToken(), rule, addCompletition);
 		}
 
 	}
@@ -203,26 +235,27 @@ export class Parser {
 	 */
 	public static accept(rule: IParseMatchRule, addCompletition: boolean = true, preserveToken: boolean = false) {
 
-		if (Parser.currentToken) {
-			Parser.addTokenDescriptor(Parser.currentToken, rule, addCompletition);
+		const currToken = Parser.getToken();
+		const nextToken = Parser.getNextToken();
+
+		if (currToken) {
+			Parser.addTokenDescriptor(currToken, rule, addCompletition);
 		}
 
-		if (Parser.nextToken) {
-			Parser.addTokenDescriptor(Parser.nextToken, rule, addCompletition);
+		if (nextToken) {
+			Parser.addTokenDescriptor(nextToken, rule, addCompletition);
 		}
 
 		Parser.parseTable.push({
 			type: PARSE_OP_TYPE.ACCEPT,
-			token: Parser.nextToken,
+			token: nextToken,
 			rule: rule
 		});
 
-		if (Parser.nextToken && rule.match(Parser.nextToken)) {
+		if (nextToken && rule.match(nextToken)) {
 
 			if (!preserveToken) {
-				Parser.prevToken = Parser.currentToken;
-				Parser.currentToken = Parser.nextToken;
-				Parser.nextToken = Parser.getNextLexerToken();
+				Parser.move();
 			}
 
 			return true;
@@ -243,42 +276,44 @@ export class Parser {
 	 */
 	public static expect(rule: IParseMatchRule, addCompletition: boolean = true) {
 
-		if (Parser.nextToken) {
-			Parser.addTokenDescriptor(Parser.nextToken, rule, addCompletition);
+		const nextToken = Parser.getNextToken();
+
+		if (nextToken) {
+			Parser.addTokenDescriptor(nextToken, rule, addCompletition);
 		}
 
-		Parser.prevToken = Parser.currentToken;
-		Parser.currentToken = Parser.nextToken;
-		Parser.nextToken = Parser.getNextLexerToken();
+		Parser.move();
+		const currToken = Parser.getToken();
+		const prevToken = Parser.getPrevToken();
 
 		Parser.parseTable.push({
 			type: PARSE_OP_TYPE.EXPECT,
-			token: Parser.currentToken,
+			token: currToken,
 			rule: rule
 		});
 
-		if (!Parser.currentToken) {
+		if (!currToken) {
 
-			Parser.errors.push({
-				range: Parser.prevToken ? tokenToRange(Parser.prevToken) : {
+			Parser.addError(
+				DOC_ERROR_SEVERITY.ERROR,
+				"Unexpected end of input",
+				`${rule.label} expected.`,
+				prevToken ? tokenToRange(prevToken) : {
 					start: { line: 1, col: 1 },
 					end: { line: 1, col: 1 }
-				},
-				name: "Unexpected end of input",
-				message: `${rule.label} expected.`,
-				severity: DOC_ERROR_SEVERITY.ERROR
-			});
+				}
+			);
 
 			return false;
 
-		} else if (!rule.match(Parser.currentToken)) {
+		} else if (!rule.match(currToken)) {
 
-			Parser.errors.push({
-				range: tokenToRange(Parser.currentToken),
-				name: `Unexpected token`,
-				message: `${rule.label} expected, got '${Parser.currentToken.type}'.`,
-				severity: DOC_ERROR_SEVERITY.ERROR
-			});
+			Parser.addError(
+				DOC_ERROR_SEVERITY.ERROR,
+				`Unexpected token`,
+				`${rule.label} expected, got '${currToken.type}'.`,
+				tokenToRange(currToken)
+			);
 
 			return false;
 
@@ -293,18 +328,18 @@ export class Parser {
 	 */
 	public static next() {
 
-		Parser.prevToken = Parser.currentToken;
-		Parser.currentToken = Parser.nextToken;
-		Parser.nextToken = Parser.getNextLexerToken();
+		if (Parser.hasNextToken()) {
 
-		Parser.parseTable.push({
-			type: PARSE_OP_TYPE.NEXT,
-			token: Parser.currentToken,
-			rule: null
-		});
+			Parser.move();
 
-		if (Parser.nextToken) {
+			Parser.parseTable.push({
+				type: PARSE_OP_TYPE.NEXT,
+				token: Parser.getToken(),
+				rule: null
+			});
+
 			return true;
+
 		} else {
 			return false;
 		}
@@ -316,7 +351,33 @@ export class Parser {
 	 */
 	public static hasNextToken() {
 
-		return Parser.nextToken ? true : false;
+		return Parser.getNextToken() ? true : false;
+
+	}
+
+	/**
+	 * Returns token position
+	 */
+	public static getTokenPosition() {
+
+		return Parser.tokenPos;
+
+	}
+
+	/**
+	 * Sets token position
+	 *
+	 * Can be used to move back or forward in parsing.
+	 * Can be used to implement lookahead parsing
+	 * @param pos New position
+	 */
+	public static setTokenPosition(pos: number) {
+
+		if (pos < 0 || pos >= Parser.tokenBuffer.length - 1) {
+			throw new Error("Position is out of range.");
+		}
+
+		Parser.tokenPos = pos;
 
 	}
 
@@ -325,7 +386,21 @@ export class Parser {
 	 */
 	public static getLastKnownToken() {
 
-		return Parser.currentToken ? Parser.currentToken : Parser.prevToken ? Parser.prevToken : null;
+		const currToken = Parser.getToken();
+		const prevToken = Parser.getPrevToken();
+
+		return currToken ? currToken : prevToken ? prevToken : null;
+
+	}
+
+	/**
+	 * Sets if to flush errors immediately
+	 *
+	 * @param value New flag value
+	 */
+	public static setFlushErrors(value: boolean) {
+
+		Parser.flushErrorsImmediately = value;
 
 	}
 
@@ -341,7 +416,7 @@ export class Parser {
 
 		const token = Parser.getLastKnownToken();
 
-		Parser.errors.push({
+		Parser.errorBuffer.push({
 			range: range ? range : token ? tokenToRange(token) : {
 				start: { line: 1, col: 1 },
 				end: { line: 1, col: 1 }
@@ -350,6 +425,32 @@ export class Parser {
 			message: message,
 			severity: severity
 		});
+
+		if (Parser.flushErrorsImmediately) {
+			Parser.flushErrors();
+		}
+
+	}
+
+	/**
+	 * Flushes errors from buffer
+	 */
+	public static flushErrors() {
+
+		for (let i = 0; i < Parser.errorBuffer.length; i++) {
+			Parser.errors.push(Parser.errorBuffer[i]);
+		}
+
+		Parser.clearErrorBuffer();
+
+	}
+
+	/**
+	 * Clears buffer of errors
+	 */
+	public static clearErrorBuffer() {
+
+		Parser.errorBuffer = [];
 
 	}
 

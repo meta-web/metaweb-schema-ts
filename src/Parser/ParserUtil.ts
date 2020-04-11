@@ -35,17 +35,23 @@ export function tokenToPosition(token: Token) : IDocumentPosition {
  * Creates range object from a token
  *
  * @param token Token
+ * @param token Optional end token
  */
-export function tokenToRange(token: Token) : IDocumentRange {
+export function tokenToRange(token: Token, endToken?: Token) : IDocumentRange {
 
-	const startPos = tokenToPosition(token);
-	const endPos = {
-		line: startPos.line,
-		col: startPos.col + token.text.length
+	const startTokenPos = tokenToPosition(token);
+	const endTokenPos = endToken ? tokenToPosition(endToken) : null;
+
+	const endPos = endToken ? {
+		line: endTokenPos.line,
+		col: endTokenPos.col + endToken.text.length
+	} : {
+		line: startTokenPos.line,
+		col: startTokenPos.col + token.text.length
 	};
 
 	return {
-		start: startPos,
+		start: startTokenPos,
 		end: endPos
 	}
 

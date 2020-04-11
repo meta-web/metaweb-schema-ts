@@ -7,14 +7,13 @@ TypeScript implementation of META Schema parser, analyzer, compiler and run-time
 **Project status:**
 
 - [X] Syntax definition
-- [.] Syntax parser
-    - [ ] let propagate/inherit
-    - [ ] Reference to an action as a value
-    - [ ] Not operator
-- [.] Syntax highligher (TextMate2, not yet published)
-    - [ ] let propagate/inherit
-    - [ ] Attribute reference in an action invoke statement
+- [X] Syntax parser
+- [X] Syntax highligher (TextMate2, not yet published)
 - [ ] Semantic analyzer
+  - [ ] Build ASG (Abstract Semantic Graph) *in progress*
+  - [ ] Check symbols and assign references
+  - [ ] Resolve and check types
+  - [ ] Check call arguments
 - [ ] Compiler
 - [ ] Language Service (partialy done)
 - [ ] VS Code Extension (partialy done)

@@ -10,7 +10,7 @@
  * See LICENSE file distributed with this source code for more information.
  */
 
-import { ISchema } from "../Schema";
+import { IASTSchema } from "../AST";
 
 /**
  * Namespace outline
@@ -29,7 +29,7 @@ export interface ISchemaOutlineNamespace {
  */
 export interface ISchemaOutlineSchema {
 	/** Schema node */
-	schema: ISchema;
+	schema: IASTSchema;
 }
 
 /**

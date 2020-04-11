@@ -17,9 +17,9 @@ import { IDocumentPosition } from "../Shared/IDocumentPosition";
 import { ITokenDescriptor } from "../Parser/ITokenDescriptor";
 import { EventEmitter } from "../Shared/EventEmitter";
 import { IDocumentUpdateEvent } from "./IDocumentUpdateEvent";
-import { ISchemaNode } from "../Schema/ISchemaNode";
-import * as IS from "../Schema";
-import { NODE_TYPES } from "../Schema";
+import { IASTSchemaNode } from "../AST/IASTSchemaNode";
+import * as IS from "../AST";
+import { AST_NODE_TYPES } from "../AST";
 
 /**
  * Language service configuration
@@ -59,11 +59,11 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 	 * Creates token -> AST index, used for debugging
 	 * @param rootNode Schema node
 	 */
-	private createTokenAstIndex(rootNode: ISchemaNode) {
+	private createTokenAstIndex(rootNode: IASTSchemaNode) {
 
 		const index = [];
 
-		const indexNode = (node: ISchemaNode) => {
+		const indexNode = (node: IASTSchemaNode) => {
 
 			if (!node) {
 				return;
@@ -78,102 +78,104 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 			}
 
 			switch(node.n) {
-				case NODE_TYPES.SCHEMA:
-					((node as IS.ISchema).g || []).forEach((n) => indexNode(n));
-					((node as IS.ISchema).p || []).forEach((n) => indexNode(n));
-					((node as IS.ISchema).b || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.SCHEMA:
+					((node as IS.IASTSchema).g || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchema).p || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchema).b || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.SCHEMA_ACTION:
-					((node as IS.ISchemaAction).p || []).forEach((n) => indexNode(n));
-					((node as IS.ISchemaAction).b || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.SCHEMA_ACTION:
+					((node as IS.IASTSchemaAction).p || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchemaAction).b || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.CALL:
-					indexNode((node as IS.ISchemaCall).s);
-					((node as IS.ISchemaCall).a || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.CALL:
+					indexNode((node as IS.IASTSchemaCall).s);
+					((node as IS.IASTSchemaCall).a || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.CALL_ARGUMENT:
-					indexNode((node as IS.ISchemaCallArgument).v);
+				case AST_NODE_TYPES.CALL_ARGUMENT:
+					indexNode((node as IS.IASTSchemaCallArgument).v);
 					break;
-				case NODE_TYPES.CONDITION:
-					(node as IS.ISchemaCondition).c.forEach((n) => {
+				case AST_NODE_TYPES.CONDITION:
+					(node as IS.IASTSchemaCondition).c.forEach((n) => {
 						indexNode(n.w);
 						indexNode(n.t);
 					});
-					indexNode((node as IS.ISchemaCondition).d);
+					indexNode((node as IS.IASTSchemaCondition).d);
 					break;
-				case NODE_TYPES.CONDITION_TYPE:
-					indexNode((node as IS.ISchemaConditionType).v);
-					indexNode((node as IS.ISchemaConditionType).t);
+				case AST_NODE_TYPES.CONDITION_TYPE:
+					indexNode((node as IS.IASTSchemaConditionType).v);
+					indexNode((node as IS.IASTSchemaConditionType).t);
 					break;
-				case NODE_TYPES.DOCUMENT:
-					((node as IS.ISchemaDocument).im || []).forEach((n) => indexNode(n));
-					((node as IS.ISchemaDocument).ns || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.DOCUMENT:
+					((node as IS.IASTSchemaDocument).im || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchemaDocument).ns || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.GENERIC:
-					indexNode((node as IS.ISchemaGeneric).df);
-					indexNode((node as IS.ISchemaGeneric).ex);
+				case AST_NODE_TYPES.GENERIC:
+					indexNode((node as IS.IASTSchemaGeneric).df);
+					indexNode((node as IS.IASTSchemaGeneric).ex);
 					break;
-				case NODE_TYPES.INVOKE:
-					indexNode((node as IS.ISchemaInvoke).r);
-					indexNode((node as IS.ISchemaInvoke).s);
-					((node as IS.ISchemaInvoke).a || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.INVOKE:
+					indexNode((node as IS.IASTSchemaInvoke).s);
+					((node as IS.IASTSchemaInvoke).a || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.LAMBDA:
-					((node as IS.ISchemaLambda).p || []).forEach((n) => indexNode(n));
-					indexNode((node as IS.ISchemaLambda).b);
+				case AST_NODE_TYPES.LAMBDA:
+					((node as IS.IASTSchemaLambda).p || []).forEach((n) => indexNode(n));
+					indexNode((node as IS.IASTSchemaLambda).b);
 					break;
-				case NODE_TYPES.NAMESPACE:
-					((node as IS.ISchemaNamespace).ns || []).forEach((n) => indexNode(n));
-					((node as IS.ISchemaNamespace).us || []).forEach((n) => indexNode(n));
-					((node as IS.ISchemaNamespace).s || []).forEach((n) => indexNode(n));
-					((node as IS.ISchemaNamespace).t || []).forEach((n) => indexNode(n));
-					((node as IS.ISchemaNamespace).l || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.NAMESPACE:
+					((node as IS.IASTSchemaNamespace).ns || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchemaNamespace).us || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchemaNamespace).s || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchemaNamespace).t || []).forEach((n) => indexNode(n));
+					((node as IS.IASTSchemaNamespace).l || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.SCHEMA_PARAM:
-					indexNode((node as IS.ISchemaParam).t);
-					indexNode((node as IS.ISchemaParam).v);
+				case AST_NODE_TYPES.SCHEMA_PARAM:
+					indexNode((node as IS.IASTSchemaParam).t);
+					indexNode((node as IS.IASTSchemaParam).v);
 					break;
-				case NODE_TYPES.REF_PROPERTY:
-					indexNode((node as IS.ISchemaRefProperty).i);
-					indexNode((node as IS.ISchemaRefProperty).v);
+				case AST_NODE_TYPES.REF_ACTION:
+					indexNode((node as IS.IASTSchemaRefAction).r);
 					break;
-				case NODE_TYPES.REF_SCHEMA:
-				case NODE_TYPES.REF_TYPE:
-					((node as IS.ISchemaRefType).p || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.REF_PROPERTY:
+					indexNode((node as IS.IASTSchemaRefProperty).i);
+					indexNode((node as IS.IASTSchemaRefProperty).v);
 					break;
-				case NODE_TYPES.REF_TRANSLATION:
+				case AST_NODE_TYPES.REF_SCHEMA:
+				case AST_NODE_TYPES.REF_TYPE:
+					((node as IS.IASTSchemaRefType).p || []).forEach((n) => indexNode(n));
+					break;
+				case AST_NODE_TYPES.REF_TRANSLATION:
 					((node as IS.ISchemaRefTranslation).a || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.TRANSLATION:
-					((node as IS.ISchemaTranslation).t || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.TRANSLATION:
+					((node as IS.IASTSchemaTranslation).t || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.TRANSLATION_TERM:
-					((node as IS.ISchemaTranslationTerm).p || []).forEach((n) => indexNode(n));
-					indexNode((node as IS.ISchemaTranslationTerm).v);
+				case AST_NODE_TYPES.TRANSLATION_TERM:
+					((node as IS.IASTSchemaTranslationTerm).p || []).forEach((n) => indexNode(n));
+					indexNode((node as IS.IASTSchemaTranslationTerm).v);
 					break;
-				case NODE_TYPES.TYPE_ALLOF:
-				case NODE_TYPES.TYPE_ONEOF:
-					((node as IS.ISchemaTypeAllOf|IS.ISchemaTypeOneOf).t || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.TYPE_ALLOF:
+				case AST_NODE_TYPES.TYPE_ONEOF:
+					((node as IS.IASTSchemaTypeAllOf|IS.IASTSchemaTypeOneOf).t || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.TYPE_PARAM:
-					indexNode((node as IS.ISchemaTypeParameter).t);
+				case AST_NODE_TYPES.TYPE_PARAM:
+					indexNode((node as IS.IASTSchemaTypeParameter).t);
 					break;
-				case NODE_TYPES.TYPE_STRUCT:
-					Object.keys((node as IS.ISchemaTypeStruct).p).forEach((k) => indexNode((node as IS.ISchemaTypeStruct).p[k]));
+				case AST_NODE_TYPES.TYPE_STRUCT:
+					Object.keys((node as IS.IASTSchemaTypeStruct).p).forEach((k) => indexNode((node as IS.IASTSchemaTypeStruct).p[k]));
 					break;
-				case NODE_TYPES.UPDATE:
-					indexNode((node as IS.ISchemaUpdate).r);
-					indexNode((node as IS.ISchemaUpdate).v);
+				case AST_NODE_TYPES.UPDATE:
+					indexNode((node as IS.IASTSchemaUpdate).r);
+					indexNode((node as IS.IASTSchemaUpdate).v);
 					break;
-				case NODE_TYPES.VALUE_LIST:
-					((node as IS.ISchemaValueList).e || []).forEach((n) => indexNode(n));
+				case AST_NODE_TYPES.VALUE_LIST:
+					((node as IS.IASTSchemaValueList).e || []).forEach((n) => indexNode(n));
 					break;
-				case NODE_TYPES.VALUE_STRUCT:
-					Object.keys((node as IS.ISchemaValueStruct).p).forEach((k) => indexNode((node as IS.ISchemaValueStruct).p[k]));
+				case AST_NODE_TYPES.VALUE_STRUCT:
+					Object.keys((node as IS.IASTSchemaValueStruct).p).forEach((k) => indexNode((node as IS.IASTSchemaValueStruct).p[k]));
 					break;
-				case NODE_TYPES.VARIABLE:
-					indexNode((node as IS.ISchemaVariable).t);
-					indexNode((node as IS.ISchemaVariable).v);
+				case AST_NODE_TYPES.VARIABLE:
+					indexNode((node as IS.IASTSchemaVariable).t);
+					indexNode((node as IS.IASTSchemaVariable).v);
 					break;
 			}
 
@@ -360,7 +362,7 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 			return null;
 		}
 
-		const res : Array<ISchemaNode> = [];
+		const res : Array<IASTSchemaNode> = [];
 
 		for (let i = 0; i < doc.tokenToAstIndex.length; i++) {
 

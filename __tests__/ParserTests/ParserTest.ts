@@ -14,9 +14,9 @@ import "mocha";
 import { expect, use as chaiUse } from "chai";
 import chaiSubset = require('chai-subset');
 
-import { NODE_TYPES, ISchemaRefType } from "../../src/Schema";
+import { AST_NODE_TYPES, IASTSchemaRefType } from "../../src/AST";
 import { Parser } from "../../src/Parser/Parser";
-import { ParseImportStatement, ParseDocument, ParseTypeReference, ParseStringTemplate } from "../../src/Parser/Grammar/Grammar";
+import { ParseImportStatement, ParseDocument, ParseTypeReference, ParseStringTemplate, ParseExpression } from "../../src/Parser/Grammar/Grammar";
 
 chaiUse(chaiSubset);
 
@@ -25,7 +25,7 @@ const dirOpts = { depth: null, colors: true };
 
 // Default namespace
 const defaultNs = {
-	n: NODE_TYPES.NAMESPACE,
+	n: AST_NODE_TYPES.NAMESPACE,
 	id: [ "__default__" ],
 	cm: null,
 	ns: [],
@@ -36,6 +36,93 @@ const defaultNs = {
 };
 
 describe("Parser > Parser", () => {
+
+	it("Should handle token maniuplation methods", () => {
+
+		Parser.feed("import \"hello\";");
+
+		// Get first token
+		expect(Parser.getNextToken()).to.containSubset({
+			type: "import",
+			value: "import"
+		});
+
+		// Try to accept invalid token
+		expect(Parser.accept({
+			label: "semicolon",
+			match: (token) => token.type === "semicolon",
+		})).to.eq(false);
+
+		// Check if next token is still preserved
+		expect(Parser.getNextToken()).to.containSubset({
+			type: "import",
+			value: "import"
+		});
+
+		// Try to expect proper token
+		expect(Parser.expect({
+			label: "import",
+			match: (token) => token.type === "import",
+		})).to.eq(true);
+
+		// Check if next token was moved
+		expect(Parser.getNextToken()).to.containSubset({
+			type: "ws",
+			value: " "
+		});
+
+		// Try to move to next token manually
+		expect(Parser.next()).to.eq(true);
+
+		// Check if next token was moved
+		expect(Parser.getNextToken()).to.containSubset({
+			type: "string_literal",
+			value: "hello"
+		});
+
+		// Try to accept proper token with preserve
+		expect(Parser.accept({
+			label: "string_literal",
+			match: (token) => token.type === "string_literal",
+		}, true, true)).to.eq(true);
+
+		// Check if next token is still preserved
+		expect(Parser.getNextToken()).to.containSubset({
+			type: "string_literal",
+			value: "hello"
+		});
+
+		// Try to accept proper token WITHOUT preserve
+		expect(Parser.accept({
+			label: "string_literal",
+			match: (token) => token.type === "string_literal",
+		}, true, false)).to.eq(true);
+
+		// Check if previous token is correct
+		expect(Parser.getPrevToken()).to.containSubset({
+			type: "ws",
+			value: " "
+		});
+
+		// Check if current token is correct
+		expect(Parser.getToken()).to.containSubset({
+			type: "string_literal",
+			value: "hello"
+		});
+
+		// Check if next token was moved to next one
+		expect(Parser.getNextToken()).to.containSubset({
+			type: "semicolon",
+			value: ";"
+		});
+
+		expect(Parser.hasNextToken()).to.eq(true);
+		expect(Parser.next()).to.eq(true);
+
+		expect(Parser.hasNextToken()).to.eq(false);
+		expect(Parser.next()).to.eq(false);
+
+	});
 
 	it("Should accept IMPORT token", () => {
 
@@ -78,7 +165,7 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.deep.contain({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [],
 			ns: [ defaultNs ]
 		});
@@ -94,7 +181,7 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.deep.contain({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [],
 			ns: [ defaultNs ]
 		});
@@ -110,7 +197,7 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.deep.contain({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [],
 			ns: [ defaultNs ]
 		});
@@ -126,7 +213,7 @@ describe("Parser > Parser", () => {
 		const res = ParseImportStatement({});
 
 		expect(res).to.deep.contain({
-			n: NODE_TYPES.IMPORT,
+			n: AST_NODE_TYPES.IMPORT,
 			u: "hello"
 		});
 
@@ -141,9 +228,9 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.containSubset({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [{
-				n: NODE_TYPES.IMPORT,
+				n: AST_NODE_TYPES.IMPORT,
 				u: "hello"
 			}],
 			ns: [ defaultNs ]
@@ -160,7 +247,7 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.containSubset({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [],
 			ns: [ defaultNs ]
 		});
@@ -176,12 +263,12 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.containSubset({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [],
 			ns: [ {
 				...defaultNs,
 				us: [{
-					n: NODE_TYPES.USE,
+					n: AST_NODE_TYPES.USE,
 					ns: [ "Hello", "World" ]
 				}]
 			} ]
@@ -198,10 +285,10 @@ describe("Parser > Parser", () => {
 		const res = ParseDocument({});
 
 		expect(res).to.containSubset({
-			n: NODE_TYPES.DOCUMENT,
+			n: AST_NODE_TYPES.DOCUMENT,
 			im: [],
 			ns: [ defaultNs, {
-				n: NODE_TYPES.NAMESPACE,
+				n: AST_NODE_TYPES.NAMESPACE,
 				id: [ "My", "Name", "Space" ],
 				cm: null,
 				us: [],
@@ -221,11 +308,11 @@ describe("Parser > Parser", () => {
 		const res = ParseTypeReference({});
 
 		expect(res).to.containSubset({
-			n: NODE_TYPES.REF_TYPE,
+			n: AST_NODE_TYPES.REF_TYPE,
 			p: [],
 			ns: [ "My", "Name", "Space" ],
 			r: "Type",
-		} as ISchemaRefType);
+		} as IASTSchemaRefType);
 
 		expect(Parser.getErrors().length).to.eq(0);
 
@@ -236,6 +323,32 @@ describe("Parser > Parser", () => {
 		Parser.feed('`Hello, \\`${name}\\` \\${name}!`');
 
 		const res = ParseStringTemplate({});
+
+		// console.dir(res, dirOpts);
+		// console.dir(Parser.getErrors(), dirOpts);
+
+		expect(Parser.getErrors().length).to.eq(0);
+
+	});
+
+	it("Should parse ambiguous expression", () => {
+
+		Parser.feed("@mappedValue[0] < 42");
+
+		const res = ParseExpression({});
+
+		// console.dir(res, dirOpts);
+		// console.dir(Parser.getErrors(), dirOpts);
+
+		expect(Parser.getErrors().length).to.eq(0);
+
+	});
+
+	it("Should parse not opreator in expression", () => {
+
+		Parser.feed("!ident");
+
+		const res = ParseExpression({});
 
 		// console.dir(res, dirOpts);
 		// console.dir(Parser.getErrors(), dirOpts);
