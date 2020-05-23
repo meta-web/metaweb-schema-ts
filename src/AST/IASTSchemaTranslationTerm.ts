@@ -12,8 +12,7 @@
 
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
-import { ISchemaCallArgumentList } from "./IASTSchemaCallArguments";
-import { IASTSchemaParamList } from "./IASTSchemaParams";
+import { IASTSchemaParam } from "./IASTSchemaParams";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
 
 /**
@@ -24,7 +23,9 @@ export interface IASTSchemaTranslationTerm extends IASTSchemaNode<AST_NODE_TYPES
 	id: Array<string>;
 
 	/** Parameters */
-	p: IASTSchemaParamList;
+	p: {
+		[K: string]: IASTSchemaParam
+	};
 
 	/** Value expressions */
 	v: TASTSchemaExpression;

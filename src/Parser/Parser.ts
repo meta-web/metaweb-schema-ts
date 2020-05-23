@@ -19,6 +19,7 @@ import { IDocumentError, DOC_ERROR_SEVERITY } from "../Shared/IDocumentError";
 import { tokenToRange } from "./ParserUtil";
 import { IDocumentRange } from "../Shared/IDocumentRange";
 import { IParseTableEntry, PARSE_OP_TYPE } from "./IParseTableEntry";
+import { ERROR_CODE } from "../Shared/ErrorCodes";
 
 /**
  * Parser class
@@ -111,7 +112,7 @@ export class Parser {
 
 		} catch (err) {
 
-			this.addError(DOC_ERROR_SEVERITY.ERROR, "Unexpected token", "Invalid syntax.");
+			this.addError(DOC_ERROR_SEVERITY.ERROR, ERROR_CODE.UNEXPECTED_TOKEN, "Invalid syntax.");
 			return null;
 
 		}
@@ -296,7 +297,7 @@ export class Parser {
 
 			Parser.addError(
 				DOC_ERROR_SEVERITY.ERROR,
-				"Unexpected end of input",
+				ERROR_CODE.UNEXPECTED_EOF,
 				`${rule.label} expected.`,
 				prevToken ? tokenToRange(prevToken) : {
 					start: { line: 1, col: 1 },
@@ -310,7 +311,7 @@ export class Parser {
 
 			Parser.addError(
 				DOC_ERROR_SEVERITY.ERROR,
-				`Unexpected token`,
+				ERROR_CODE.UNEXPECTED_TOKEN,
 				`${rule.label} expected, got '${currToken.type}'.`,
 				tokenToRange(currToken)
 			);
@@ -412,7 +413,7 @@ export class Parser {
 	 * @param message Message
 	 * @param range Document range (current token is used when not provided)
 	 */
-	public static addError(severity: DOC_ERROR_SEVERITY, name: string, message: string, range?: IDocumentRange) {
+	public static addError(severity: DOC_ERROR_SEVERITY, name: ERROR_CODE, message: string, range?: IDocumentRange) {
 
 		const token = Parser.getLastKnownToken();
 

@@ -12,9 +12,6 @@
 
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
-import { ISchemaCallArgumentList } from "./IASTSchemaCallArguments";
-import { IASTSchemaParamList } from "./IASTSchemaParams";
-import { TASTSchemaExpression } from "./TASTSchemaExpression";
 import { IASTSchemaTranslationTerm } from "./IASTSchemaTranslationTerm";
 
 /**

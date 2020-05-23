@@ -37,7 +37,7 @@ import {
 	IASTSchemaTypeParameterList,
 	IASTSchema,
 	IASTSchemaVariable,
-	IASTSchemaUpdate,
+	IASTSchemaSet,
 	IASTSchemaRefVariable,
 	IASTSchemaInvoke,
 	IASTSchemaAction,
@@ -47,7 +47,7 @@ import {
 	TASTSchemaExpression,
 	IASTSchemaRefParam,
 	IASTSchemaRefProperty,
-	IASTSchemaConst,
+	IASTSchemaScalar,
 	IASTSchemaCall,
 	IASTSchemaCallArgument,
 	IASTSchemaValueList,
@@ -57,11 +57,13 @@ import {
 	IASTSchemaRefSchema,
 	IASTSchemaTranslation,
 	IASTSchemaTranslationTerm,
-	IASTSchemaRefAction
+	IASTSchemaRefAction,
+	ISchemaCallArgumentList
 } from "../../AST";
-import { IASTSchemaParamList, IASTSchemaParam } from "../../AST/IASTSchemaParams";
+import { IASTSchemaParam } from "../../AST/IASTSchemaParams";
 import { IASTSchemaReturn } from "../../AST/IASTSchemaReturn";
 import { DOC_ERROR_SEVERITY } from "../../Shared/IDocumentError";
+import { ERROR_CODE } from "../../Shared/ErrorCodes";
 
 /*
  * WILDCARDS
@@ -228,12 +230,12 @@ const KeywordReturn : IParseMatchRule = {
 	}]
 };
 
-const KeywordUpdate : IParseMatchRule = {
-	label: "update",
+const KeywordSet : IParseMatchRule = {
+	label: "set",
 	hint: "Updates a statefull variable.",
-	match: (token) => token.type === "update",
+	match: (token) => token.type === "set",
 	autocomplete: () => [{
-		label: "update",
+		label: "set",
 		kind: CMPL_ITEM_KIND.Keyword,
 		detail: "Updates a statefull variable."
 	}]
@@ -635,6 +637,11 @@ const CommentOneOf = [
 	{ match: CommentSingeline, excludeHint: true }
 ];
 
+const CommentOneOfEat = [
+	{ match: CommentMultilineOpen, do: CommentMultilineBody, excludeHint: true },
+	{ match: CommentSingeline, do: e(CommentSingeline), excludeHint: true }
+];
+
 /** Whitespace or comment */
 const __ = repeat(oneOf([
 	...CommentOneOf,
@@ -683,7 +690,7 @@ export const ParseTypeStruct = block(
 				if (props[key] !== undefined) {
 					Parser.addError(
 						DOC_ERROR_SEVERITY.ERROR,
-						"Duplicate identifier",
+						ERROR_CODE.DUPLICATE_IDENTIFIER,
 						`Property '${key}' is already defined.`,
 						tokenToRange(res[1][i].identifierToken)
 					);
@@ -809,7 +816,7 @@ export const ParsePropertyDotAccessor = seq(
 				n: AST_NODE_TYPES.REF_PROPERTY,
 				v: value,
 				i: {
-					n: AST_NODE_TYPES.CONST,
+					n: AST_NODE_TYPES.SCALAR,
 					t: {
 						n: AST_NODE_TYPES.REF_TYPE,
 						ns: builtinTypes.String.ns,
@@ -819,8 +826,11 @@ export const ParsePropertyDotAccessor = seq(
 							range: tokenToRange(res[0])
 						}
 					},
+					parseInfo: {
+						range: tokenToRange(res[0])
+					},
 					v: res[0].value
-				} as IASTSchemaConst,
+				} as IASTSchemaScalar,
 				parseInfo: {
 					range: tokenToRange(st, et)
 				}
@@ -845,7 +855,7 @@ export const ParsePropertyIndexAccessor = seq(
 				v: value,
 				i: res[1],
 				parseInfo: {
-					range: tokenToRange(st, et)
+					range: tokenToRange(st, et),
 				}
 			};
 
@@ -864,7 +874,8 @@ export const ParseActionRef = seq(
 		id: res[0].value,
 		r: value,
 		parseInfo: {
-			range: tokenToRange(st, et)
+			range: tokenToRange(st, et),
+			id: tokenToRange(res[0])
 		}
 	} as IASTSchemaRefAction)
 );
@@ -884,7 +895,8 @@ export const ParseAttribute = seq(
 			n: AST_NODE_TYPES.REF_PARAM,
 			r: res[1].value,
 			parseInfo: {
-				range: tokenToRange(st, et)
+				range: tokenToRange(st, et),
+				r: tokenToRange(res[1])
 			}
 		};
 
@@ -902,7 +914,8 @@ export const ParseRefVariable = seq(
 			n: AST_NODE_TYPES.REF_VARIABLE,
 			r: res[0].value,
 			parseInfo: {
-				range: tokenToRange(st, et)
+				range: tokenToRange(st, et),
+				r: tokenToRange(res[0])
 			}
 		};
 
@@ -918,6 +931,11 @@ export const ParseCallArgumentsElement = seq(
 	], null,
 	(res, st, et) => {
 
+		const _st = res[1]
+			? tokenToPosition(res[1])
+			: res[2] && res[2].parseInfo && res[2].parseInfo.range ? res[2].parseInfo.range.start
+			: tokenToPosition(st);
+
 		// Named argument?
 		if (res[4]) {
 
@@ -925,7 +943,7 @@ export const ParseCallArgumentsElement = seq(
 			if (res[1]) {
 				Parser.addError(
 					DOC_ERROR_SEVERITY.ERROR,
-					"Invalid syntax",
+					ERROR_CODE.INVALID_SYNTAX,
 					`Unpack operator is allowed only for rest arguments.`,
 					tokenToRange(res[1])
 				);
@@ -937,7 +955,7 @@ export const ParseCallArgumentsElement = seq(
 			if (!res[2] || res[2].n !== AST_NODE_TYPES.REF_VARIABLE) {
 				Parser.addError(
 					DOC_ERROR_SEVERITY.ERROR,
-					"Invalid syntax",
+					ERROR_CODE.INVALID_SYNTAX,
 					`Expecting identifier.`,
 					res[2] ? res[2].parseInfo.range : null
 				);
@@ -947,11 +965,12 @@ export const ParseCallArgumentsElement = seq(
 
 			return {
 				n: AST_NODE_TYPES.CALL_ARGUMENT,
-				id: res[2].id,
+				id: res[2].r,
 				v: res[4],
 				r: false,
 				parseInfo: {
-					range: tokenToRange(st, et)
+					range: { start: _st, end: tokenToRange(st, et).end },
+					id: res[2].parseInfo.range
 				}
 			} as IASTSchemaCallArgument
 
@@ -964,7 +983,8 @@ export const ParseCallArgumentsElement = seq(
 				v: res[2],
 				r: res[1] ? true : false,
 				parseInfo: {
-					range: tokenToRange(st, et)
+					range: { start: _st, end: tokenToRange(st, et).end },
+					id: null
 				}
 			} as IASTSchemaCallArgument
 
@@ -978,7 +998,7 @@ export const ParseCallArguments = block(
 		{ match: ParanClose, do: (_ctx) => null },
 		{ match: AnyToken, do: list(ParseCallArgumentsElement, Comma) }
 	], null, true) ], ParanClose,
-	(res, _st, _et) : IASTSchemaParamList => res[1] ? res[1].filter((x) => x !== null) : []
+	(res, _st, _et) : ISchemaCallArgumentList => res[1] ? res[1].filter((x) => x !== null) : []
 );
 
 export const ParseRefOrCall = seq(
@@ -1015,7 +1035,7 @@ export const ParseRefOrCall = seq(
 			if (res[2]) {
 				Parser.addError(
 					DOC_ERROR_SEVERITY.ERROR,
-					"Invalid syntax",
+					ERROR_CODE.INVALID_SYNTAX,
 					`Type parameters are allowed only for calls.`,
 					tokenToRange(st, et)
 				);
@@ -1029,8 +1049,8 @@ export const ParseRefOrCall = seq(
 	}
 );
 
-export const ParseConstString = e(LiteralString, (t) => ({
-	n: AST_NODE_TYPES.CONST,
+export const ParseScalarString = e(LiteralString, (t) => ({
+	n: AST_NODE_TYPES.SCALAR,
 	t: {
 		n: AST_NODE_TYPES.REF_TYPE,
 		ns: builtinTypes.String.ns,
@@ -1044,10 +1064,10 @@ export const ParseConstString = e(LiteralString, (t) => ({
 	parseInfo: {
 		range: tokenToRange(t)
 	}
-} as IASTSchemaConst));
+} as IASTSchemaScalar));
 
-export const ParseConstNumber = e(LiteralNumber, (t) => ({
-	n: AST_NODE_TYPES.CONST,
+export const ParseScalarNumber = e(LiteralNumber, (t) => ({
+	n: AST_NODE_TYPES.SCALAR,
 	t: {
 		n: AST_NODE_TYPES.REF_TYPE,
 		ns: builtinTypes.Number.ns,
@@ -1061,10 +1081,10 @@ export const ParseConstNumber = e(LiteralNumber, (t) => ({
 	parseInfo: {
 		range: tokenToRange(t)
 	}
-} as IASTSchemaConst));
+} as IASTSchemaScalar));
 
-export const ParseConstBooleanTrue = e(LiteralBooleanTrue, (t) => ({
-	n: AST_NODE_TYPES.CONST,
+export const ParseScalarBooleanTrue = e(LiteralBooleanTrue, (t) => ({
+	n: AST_NODE_TYPES.SCALAR,
 	t: {
 		n: AST_NODE_TYPES.REF_TYPE,
 		ns: builtinTypes.Boolean.ns,
@@ -1078,10 +1098,10 @@ export const ParseConstBooleanTrue = e(LiteralBooleanTrue, (t) => ({
 	parseInfo: {
 		range: tokenToRange(t)
 	}
-} as IASTSchemaConst));
+} as IASTSchemaScalar));
 
-export const ParseConstBooleanFalse = e(LiteralBooleanFalse, (t) => ({
-	n: AST_NODE_TYPES.CONST,
+export const ParseScalarBooleanFalse = e(LiteralBooleanFalse, (t) => ({
+	n: AST_NODE_TYPES.SCALAR,
 	t: {
 		n: AST_NODE_TYPES.REF_TYPE,
 		ns: builtinTypes.Boolean.ns,
@@ -1095,10 +1115,10 @@ export const ParseConstBooleanFalse = e(LiteralBooleanFalse, (t) => ({
 	parseInfo: {
 		range: tokenToRange(t)
 	}
-} as IASTSchemaConst));
+} as IASTSchemaScalar));
 
-export const ParseConstNull = e(LiteralNull, (t) => ({
-	n: AST_NODE_TYPES.CONST,
+export const ParseScalarNull = e(LiteralNull, (t) => ({
+	n: AST_NODE_TYPES.SCALAR,
 	t: {
 		n: AST_NODE_TYPES.REF_TYPE,
 		ns: builtinTypes.Null.ns,
@@ -1112,7 +1132,7 @@ export const ParseConstNull = e(LiteralNull, (t) => ({
 	parseInfo: {
 		range: tokenToRange(t)
 	}
-} as IASTSchemaConst));
+} as IASTSchemaScalar));
 
 export const ParseStringTemplateInterpolation = block(
 	StringTemplateInterpolation, [ (ctx) => ParseExpression(ctx) ], BraceClose,
@@ -1134,7 +1154,7 @@ export const ParseStringTemplate = expectBlock(
 			id: "value",
 			r: false,
 			v: {
-				n: AST_NODE_TYPES.CONST,
+				n: AST_NODE_TYPES.SCALAR,
 				t: {
 					n: AST_NODE_TYPES.REF_TYPE,
 					ns: builtinTypes.String.ns,
@@ -1146,7 +1166,7 @@ export const ParseStringTemplate = expectBlock(
 				},
 				v: t.value,
 				parseInfo: { range: tokenToRange(t) }
-			} as IASTSchemaConst,
+			} as IASTSchemaScalar,
 			parseInfo: { range: tokenToRange(t) }
 		} as IASTSchemaCallArgument)) },
 		{ match: StringTemplateEscape, do: e(StringTemplateEscape, (t) => ({
@@ -1154,7 +1174,7 @@ export const ParseStringTemplate = expectBlock(
 			id: "value",
 			r: false,
 			v: {
-				n: AST_NODE_TYPES.CONST,
+				n: AST_NODE_TYPES.SCALAR,
 				t: {
 					n: AST_NODE_TYPES.REF_TYPE,
 					ns: builtinTypes.String.ns,
@@ -1166,7 +1186,7 @@ export const ParseStringTemplate = expectBlock(
 				},
 				v: t.value.substr(1),
 				parseInfo: { range: tokenToRange(t) }
-			} as IASTSchemaConst,
+			} as IASTSchemaScalar,
 			parseInfo: { range: tokenToRange(t) }
 		} as IASTSchemaCallArgument)) },
 		{ match: StringTemplateInterpolation, do: ParseStringTemplateInterpolation }
@@ -1216,10 +1236,16 @@ export const ParseExpressionList = block(
 
 export const ParseExpressionStructElement = seq(
 	[ __ , e(Identifier), _ , e(Colon) , __ , (ctx) => ParseExpression(ctx) , __ ], null,
-	(res, _st, _et) => ({
+	(res, _st, et) => ({
 		identifier: res[1].value,
 		identifierToken: res[1],
-		value: res[5]
+		value: res[5],
+		parseInfo: {
+			range: {
+				start: tokenToPosition(res[1]),
+				end: res[5] ? res[5].parseInfo.range.end : et
+			}
+		}
 	})
 );
 
@@ -1228,6 +1254,7 @@ export const ParseExpressionStruct = block(
 	(res, st, et) => {
 
 		const props = {};
+		const propsParseInfo = {};
 
 		if (res[1]) {
 			for (let i = 0; i < res[1].length; i++) {
@@ -1236,13 +1263,14 @@ export const ParseExpressionStruct = block(
 				if (props[key] !== undefined) {
 					Parser.addError(
 						DOC_ERROR_SEVERITY.ERROR,
-						"Duplicate identifier",
+						ERROR_CODE.DUPLICATE_IDENTIFIER,
 						`Property '${key}' is already defined.`,
 						tokenToRange(res[1][i].identifierToken)
 					);
 				}
 
 				props[key] = res[1][i].value;
+				propsParseInfo[key] = res[1][i].parseInfo.range;
 
 			}
 		}
@@ -1251,7 +1279,8 @@ export const ParseExpressionStruct = block(
 			n: AST_NODE_TYPES.VALUE_STRUCT,
 			p: props,
 			parseInfo: {
-				range: tokenToRange(st, et)
+				range: tokenToRange(st, et),
+				p: propsParseInfo
 			}
 		} as IASTSchemaValueStruct;
 
@@ -1370,14 +1399,14 @@ export const ParseExpressionOperand = expectOneOf([
 	{ match: Not, do: ParseNotOperator }, // Parse not operator
 	{ match: KeywordFunction, do: ParseLambdaFunction }, // Parse lambda definition
 	{ match: KeywordWhen, do: ParseWhenStatement }, // Parse when statement
-	{ match: LiteralBooleanTrue, do: ParseConstBooleanTrue }, // Parse boolean literal
-	{ match: LiteralBooleanFalse, do: ParseConstBooleanFalse }, // Parse boolean literal
-	{ match: LiteralNull, do: ParseConstNull }, // Parse null literal
+	{ match: LiteralBooleanTrue, do: ParseScalarBooleanTrue }, // Parse boolean literal
+	{ match: LiteralBooleanFalse, do: ParseScalarBooleanFalse }, // Parse boolean literal
+	{ match: LiteralNull, do: ParseScalarNull }, // Parse null literal
 	{ match: Attribute, do: ParseRefOrCall }, // Parse attribute identifier
 	{ match: Identifier, do: ParseRefOrCall }, // Parse identifier or call
 	{ match: StringTemplateOpen, do: ParseStringTemplate }, // Parse string literal
-	{ match: LiteralString, do: ParseConstString }, // Parse string literal
-	{ match: LiteralNumber, do: ParseConstNumber }, // Parse number literal
+	{ match: LiteralString, do: ParseScalarString }, // Parse string literal
+	{ match: LiteralNumber, do: ParseScalarNumber }, // Parse number literal
 	{ match: ParanOpen, do: ParseSubExpression }, // Sub-expression
 	{ match: BracketOpen, do: ParseExpressionList }, // Parse inline array
 	{ match: BraceOpen, do: ParseExpressionStruct }, // Parse inline object
@@ -1486,7 +1515,8 @@ export const ParseTypeGenericsDeclarationElement = seq(
 		ex: res[3] ? res[3][1] : null,
 		df: null,
 		parseInfo: {
-			range: tokenToRange(st, et)
+			range: tokenToRange(st, et),
+			id: tokenToRange(res[1])
 		}
 	} as IASTSchemaGeneric)
 );
@@ -1501,7 +1531,7 @@ export const ParseTypeDeclaration = seq(
 	(res, st, et) => ({
 		n: AST_NODE_TYPES.TYPE,
 		id: res[1].value,
-		g: res[3],
+		g: res[3] || [],
 		t: res[7],
 		parseInfo: {
 			range: tokenToRange(st, et),
@@ -1517,27 +1547,53 @@ export const ParseSchemaParamDeclarationElement = seq(
 	[ __ , opt(Multiply) , e(IdentifierDeclaration), _ , e(Colon) , __ , (ctx) => ParseTypeExpression(ctx) , __ , startsWith(
 		Assignment, [ _ , ParseExpression , __ ], (res) => res[1], false
 	) ], null,
-	(res, _st, _et) => ({
+	(res, st, et) => ({
 		n: AST_NODE_TYPES.SCHEMA_PARAM,
 		id: res[2].value,
 		t: res[6],
 		v: res[8],
-		r: res[1] ? true : false
+		r: res[1] ? true : false,
+		parseInfo: {
+			range: tokenToRange(st, et),
+			id: tokenToRange(res[2])
+		}
 	} as IASTSchemaParam)
 );
 
 export const ParseSchemaParamDeclaration = block(
-	ParanOpen, [ __ , startsWith(IdentifierDeclaration, [ list(ParseSchemaParamDeclarationElement, Comma) ]) ], ParanClose,
-	(res, _st, _et) : IASTSchemaParamList => res[1] ? res[1][0] : []
+	// tslint:disable-next-line: max-line-length
+	ParanOpen, [ __ , startsWith(IdentifierDeclaration, [ list(ParseSchemaParamDeclarationElement, Comma) ], (res) => res[0]) , __ ], ParanClose,
+	(res, _st, _et) => {
+
+		const params = {};
+
+		if (res[1]) {
+			for (let i = 0; i < res[1].length; i++) {
+				const key = res[1][i].id;
+
+				if (params[key] !== undefined) {
+					Parser.addError(
+						DOC_ERROR_SEVERITY.ERROR,
+						ERROR_CODE.DUPLICATE_IDENTIFIER,
+						`Parameter '${key}' is already defined.`,
+						res[1][i].parseInfo.id
+					);
+				}
+
+				params[key] = res[1][i];
+			}
+		}
+
+		return params;
+
+	}
 );
 
 export const ParseLetStatement = seq(
 	[
+		e(KeywordLet),
 		// Is inherited or propagated
-		_ , oneOf([
-			{ match: KeywordPropagate, do: (_ctx) => "propagate" },
-			{ match: KeywordInherit, do: (_ctx) => "inherit" }
-		]) ,
+		_ , opt(KeywordPropagate) ,
 		// Is statefull
 		_ , opt(KeywordState) ,
 		// Identifier
@@ -1549,69 +1605,72 @@ export const ParseLetStatement = seq(
 	], Semicolon,
 	(res, st, et) => ({
 		n: AST_NODE_TYPES.VARIABLE,
-		id: res[5].value,
+		id: res[6].value,
 		cm: null,
-		t: res[7],
-		v: res[11],
-		st: res[3] ? true : false,
-		pr: res[1] && res[1] === "propagate" ? true : false,
-		in: res[1] && res[1] === "inherit" ? true : false,
+		t: res[8],
+		v: res[12],
+		st: res[4] ? true : false,
+		pr: res[2] ? true : false,
+		in: false,
 		parseInfo: {
-			range: tokenToRange(st, et)
+			range: tokenToRange(st, et),
+			id: tokenToRange(res[6])
 		}
 	} as IASTSchemaVariable)
 );
 
 export const ParseReturnStatement = seq(
-	[ _ , ParseExpression ], Semicolon,
+	[ e(KeywordReturn) , _ , ParseExpression ], Semicolon,
 	(res, st, et) => ({
 		n: AST_NODE_TYPES.RETURN,
-		v: res[1],
+		v: res[2],
 		parseInfo: {
-			range: tokenToRange(st, et)
+			range: tokenToRange(st, et),
+			keyword: tokenToRange(res[0])
 		}
 	} as IASTSchemaReturn)
 );
 
-export const ParseActionUpdateStatement = seq(
-	[ _ , e(Identifier) , _ , e(Assignment) , __ , ParseExpression ], Semicolon,
+export const ParseActionSetStatement = seq(
+	[ e(KeywordSet) , _ , e(Identifier) , _ , e(Assignment) , __ , ParseExpression ], Semicolon,
 	(res, st, et) => ({
-		n: AST_NODE_TYPES.UPDATE,
+		n: AST_NODE_TYPES.SET,
 		r: {
 			n: AST_NODE_TYPES.REF_VARIABLE,
-			r: res[1].value,
+			r: res[2].value,
 			parseInfo: {
-				range: tokenToRange(res[1])
+				range: tokenToRange(res[2]),
+				r: tokenToRange(res[2])
 			}
 		},
-		v: res[5],
+		v: res[6],
 		parseInfo: {
 			range: tokenToRange(st, et)
 		}
-	} as IASTSchemaUpdate)
+	} as IASTSchemaSet)
 );
 
 export const ParseActionInvokeStatement = seq(
-	[ _ , expectOneOf([
+	[ e(KeywordInvoke) , _ , expectOneOf([
 		{ match: Attribute, do: ParseAttribute },
 		{ match: Identifier, do: ParseRefVariable }
 	], null, true) , __ , ParseCallArguments ], Semicolon,
 	(res, st, et) => {
 
 		// Check if a resolved identifier points to an action
-		if (res[1].n !== AST_NODE_TYPES.REF_ACTION) {
+		if (res[2].n !== AST_NODE_TYPES.REF_ACTION) {
 			Parser.addError(
 				DOC_ERROR_SEVERITY.ERROR,
-				"Invalid syntax",
+				ERROR_CODE.INVALID_SYNTAX_ACTION_REF,
 				`Expected reference to an action (using # notation).`,
-				tokenToRange(res[1].parseInfo.range)
+				tokenToRange(res[2].parseInfo.range)
 			);
 		}
 
 		return {
 			n: AST_NODE_TYPES.INVOKE,
-			s: res[1],
-			a: res[5],
+			s: res[2],
+			a: res[4],
 			parseInfo: {
 				range: tokenToRange(st, et)
 			}
@@ -1621,18 +1680,21 @@ export const ParseActionInvokeStatement = seq(
 );
 
 export const ParseActionBodyStatement = oneOf([
-	...CommentOneOf,
+	...CommentOneOfEat,
 	{ match: KeywordLet, do: ParseLetStatement },
-	{ match: KeywordUpdate, do: ParseActionUpdateStatement },
+	{ match: KeywordSet, do: ParseActionSetStatement },
 	{ match: KeywordInvoke, do: ParseActionInvokeStatement },
-	{ match: WS, excludeHint: true },
-	{ match: NL, excludeHint: true }
-]);
+	{ match: WS, do: e(WS), excludeHint: true },
+	{ match: NL, do: e(NL), excludeHint: true }
+], null, true);
 
 export const ParseActionBody = repeat(ParseActionBodyStatement);
 
 export const ParseActionStatement = seq(
 	[
+		opt(KeywordOverride),
+		_ ,
+		e(KeywordAction),
 		// Identifier
 		_ , e(IdentifierDeclaration) ,
 		// Params
@@ -1643,30 +1705,26 @@ export const ParseActionStatement = seq(
 	(res, st, et) => ({
 		n: AST_NODE_TYPES.SCHEMA_ACTION,
 		cm: null,
-		id: res[1].value,
-		o: false,
-		p: res[3],
-		b: res[6],
+		id: res[4].value,
+		o: res[0] ? true : false,
+		p: res[6] ? res[6] : {},
+		b: res[9],
 		parseInfo: {
-			range: tokenToRange(st, et)
+			range: tokenToRange(st, et),
+			id: tokenToRange(res[4])
 		}
 	} as IASTSchemaAction)
 );
 
-export const ParseOverrideActionStatement = seq(
-	[ _ , e(KeywordAction) , _ , ParseActionStatement ], null,
-	(res) => ({ ...res[3], o: true } as IASTSchemaAction)
-);
-
 export const ParseSchemaStatement = oneOf([
-	...CommentOneOf,
+	...CommentOneOfEat,
 	{ match: KeywordLet, do: ParseLetStatement },
 	{ match: KeywordAction, do: ParseActionStatement },
-	{ match: KeywordOverride, do: ParseOverrideActionStatement },
+	{ match: KeywordOverride, do: ParseActionStatement },
 	{ match: KeywordReturn, do: ParseReturnStatement },
-	{ match: WS, excludeHint: true },
-	{ match: NL, excludeHint: true }
-]);
+	{ match: WS, do: e(WS), excludeHint: true },
+	{ match: NL, do: e(NL), excludeHint: true }
+], null, true);
 
 export const ParseSchemaBody = repeat(ParseSchemaStatement);
 
@@ -1683,11 +1741,12 @@ export const ParseSchemaDeclaration = seq(
 		n: AST_NODE_TYPES.SCHEMA,
 		id: res[1].value,
 		cm: null,
-		g: res[3],
-		p: res[5],
-		b: res[8],
+		g: res[3] || [],
+		p: res[5] || [],
+		b: res[8] || [],
 		parseInfo: {
-			range: tokenToRange(st, et)
+			range: tokenToRange(st, et),
+			id: tokenToRange(res[1])
 		}
 	} as IASTSchema)
 );
@@ -1704,16 +1763,39 @@ export const ParseTranslationDeclarationElement = seq(
 		// Definition
 		e(Arrow) , __ , (ctx) => ParseExpression(ctx) , __ , e(Semicolon) , __
 	], null,
-	(res, st, et) => ({
-		n: AST_NODE_TYPES.TRANSLATION_TERM,
-		id: res[0].id,
-		p: res[2] ? res[2] : [],
-		v: res[6],
-		parseInfo: {
-			range: tokenToRange(st, et),
-			id: res[0].parseInfo
-		},
-	} as IASTSchemaTranslationTerm)
+	(res, st, et) => {
+
+		const params = {};
+
+		if (res[2]) {
+			for (let i = 0; i < res[2].length; i++) {
+				const key = res[2][i].id;
+
+				if (params[key] !== undefined) {
+					Parser.addError(
+						DOC_ERROR_SEVERITY.ERROR,
+						ERROR_CODE.DUPLICATE_IDENTIFIER,
+						`Parameter '${key}' is already defined.`,
+						res[2][i].parseInfo.id
+					);
+				}
+
+				params[key] = res[2][i];
+			}
+		}
+
+		return {
+			n: AST_NODE_TYPES.TRANSLATION_TERM,
+			id: res[0].id,
+			p: params,
+			v: res[6],
+			parseInfo: {
+				range: tokenToRange(st, et),
+				id: res[0].parseInfo
+			},
+		} as IASTSchemaTranslationTerm;
+
+	}
 );
 
 export const ParseTranslationDeclaration = seq(

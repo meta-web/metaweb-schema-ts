@@ -13,35 +13,44 @@
 import { ASG_TYPE } from "./ASGNodeTypes";
 import { IASGNode } from "./IASGNode";
 import { IDocumentRange } from "../Shared/IDocumentRange";
+import { IASGDeclarationTypeParam } from "./IASGDeclarationTypeParam";
+import { IASGDeclarationSchemaParam } from "./IASGDeclarationSchemaParam";
+import { IASGDeclarationVariable } from "./IASGDeclarationVariable";
+import { IASGDeclarationAction } from "./IASGDeclarationAction";
+import { IASGDeclarationReturn } from "./IASGDeclarationReturn";
+import { TTypeDescriptor } from "../Shared/ITypeDescriptor";
 
 /**
  * ASG Schema declaration
  */
 export interface IASGDeclarationSchema extends IASGNode<ASG_TYPE.DL_SCHEMA> {
-	/** Generics @todo */
-	generics: Array<any>;
+	/** Symbol identifier */
+	id: string;
 
-	/** Parameters @todo */
-	params: { [K: string]: any; }
+	/** Generics */
+	generics: Array<IASGDeclarationTypeParam>;
 
-	/** Variables @todo */
-	variables: Array<any>;
+	/** Parameters */
+	params: { [K: string]: IASGDeclarationSchemaParam; }
 
-	/** Actions @todo */
-	actions: { [K: string]: any };
+	/** Variables */
+	variables: { [K: string]: IASGDeclarationVariable };
 
-	/** Return expression @todo */
-	return: any;
+	/** Actions */
+	actions: { [K: string]: IASGDeclarationAction };
 
-	/** Resolved type descriptor @todo */
-	typeDesc: any;
+	/** Return expression */
+	return: IASGDeclarationReturn;
+
+	/** Resolved type descriptor */
+	typeDesc: TTypeDescriptor;
 
 	/** Schema type descriptor Schema<self> */
-	typeSchemaDesc: any;
+	typeSchemaDesc: TTypeDescriptor;
 
 	/** Parse info */
 	parseInfo?: {
-		/** Position of type identifier */
+		/** Position of schema identifier */
 		id: IDocumentRange
 	}
 }

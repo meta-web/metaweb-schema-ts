@@ -12,7 +12,7 @@
 
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
-import { IASTSchemaParamList } from "./IASTSchemaParams";
+import { IASTSchemaParam } from "./IASTSchemaParams";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
 
 /**
@@ -20,7 +20,9 @@ import { TASTSchemaExpression } from "./TASTSchemaExpression";
  */
 export interface IASTSchemaLambda extends IASTSchemaNode<AST_NODE_TYPES.LAMBDA> {
 	/** Parameters */
-	p: IASTSchemaParamList;
+	p: {
+		[K: string]: IASTSchemaParam;
+	};
 
 	/** Body expressions */
 	b: TASTSchemaExpression;

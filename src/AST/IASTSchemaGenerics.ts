@@ -13,6 +13,7 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from ".";
 import { TASTSchemaTypeExpression } from "./TASTSchemaTypeExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Schema generic
@@ -26,6 +27,12 @@ export interface IASTSchemaGeneric extends IASTSchemaNode<AST_NODE_TYPES.GENERIC
 
 	/** Default type */
 	df: TASTSchemaTypeExpression;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		id: IDocumentRange
+	}
 }
 
 /**

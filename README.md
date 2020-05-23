@@ -11,9 +11,12 @@ TypeScript implementation of META Schema parser, analyzer, compiler and run-time
 - [X] Syntax highligher (TextMate2, not yet published)
 - [ ] Semantic analyzer
   - [ ] Build ASG (Abstract Semantic Graph) *in progress*
+    - [ ] Expression nodes (call, condition, condition type, lambda)
+    - [ ] Translations
+    - [ ] Use and import
+  - [ ] Resolve imports
   - [ ] Check symbols and assign references
-  - [ ] Resolve and check types
-  - [ ] Check call arguments
+  - [ ] Resolve and check types, call signatures and arguments
 - [ ] Compiler
 - [ ] Language Service (partialy done)
 - [ ] VS Code Extension (partialy done)
@@ -36,7 +39,7 @@ but primitive ones) and such. So in order to add some logic to the data source, 
 code instead of API spec. But running an untrusted third party code in our app? Really, it's not a good idea.
 It's dangerous and it can be a pretty pain in the ass.
 
-So to solve mentioned issues meta schema is a declarative "language". It just defines a computational graph
+So to solve the mentioned issues meta schema is a declarative "language". It just defines a computational graph
 which transforms input data into an understandable data structure.
 
 ### How does it work?
@@ -46,7 +49,7 @@ At first, we define a schema. This schema can be transferred over the network to
 Then, target application such as a user client or a back-end service can load the schema and compile it into
 runtime code which is safe and optimized for a given platform.
 
-This library provides a parser to parse source files into AST (Abstract Syntax Tree), analyzer to do semantic validation and compiler to compile AST into a runtime code.
+This library provides a parser to parse source files into AST (Abstract Syntax Tree), analyzer to do semantic validation and compiler to compile AST into a JavaScript runtime code.
 
 ### Is it Turing complete?
 

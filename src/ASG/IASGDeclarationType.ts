@@ -13,16 +13,25 @@
 import { ASG_TYPE } from "./ASGNodeTypes";
 import { IASGNode } from "./IASGNode";
 import { IDocumentRange } from "../Shared/IDocumentRange";
+import { TASGTypeExpressionNode } from "./TASGTypeExpression";
+import { IASGDeclarationTypeParam } from "./IASGDeclarationTypeParam";
+import { TTypeDescriptor } from "../Shared/ITypeDescriptor";
 
 /**
  * ASG Type declaration
  */
 export interface IASGDeclarationType extends IASGNode<ASG_TYPE.DL_TYPE> {
-	/** Type definition node @todo */
-	typeDef: any;
+	/** Symbol identifier */
+	id: string;
 
-	/** Resolved type descriptor @todo */
-	typeDesc: any;
+	/** Type params */
+	generics: Array<IASGDeclarationTypeParam>;
+
+	/** Type definition node */
+	typeDef: TASGTypeExpressionNode;
+
+	/** Resolved type descriptor */
+	typeDesc: TTypeDescriptor;
 
 	/** Parse info */
 	parseInfo?: {

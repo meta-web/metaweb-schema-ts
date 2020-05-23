@@ -21,8 +21,9 @@ export interface IASGDocument extends IASGNode<ASG_TYPE.DOCUMENT> {
 	/** Document URI */
 	documentUri: string;
 
-	/** Document symbols */
-	namespaces: {
-		[K: string]: IASGNamespace
-	};
+	/** Imports */
+	imports: Array<IASGNode<ASG_TYPE.DL_IMPORT>>;
+
+	/** Namespaces */
+	namespaces: Array<IASGNamespace>;
 }

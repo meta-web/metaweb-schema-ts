@@ -13,6 +13,7 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { ISchemaCallArgumentList } from "./IASTSchemaCallArguments";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Reference to a translation term
@@ -26,4 +27,11 @@ export interface ISchemaRefTranslation extends IASTSchemaNode<AST_NODE_TYPES.REF
 
 	/** Call arguments */
 	a: ISchemaCallArgumentList;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange;
+		r: IDocumentRange;
+		ns: Array<IDocumentRange>;
+	}
 }

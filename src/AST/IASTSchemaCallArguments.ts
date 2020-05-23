@@ -12,6 +12,7 @@
 
 import { TASTSchemaExpression, AST_NODE_TYPES } from ".";
 import { IASTSchemaNode } from "./IASTSchemaNode";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Schema call argument
@@ -23,8 +24,14 @@ export interface IASTSchemaCallArgument extends IASTSchemaNode<AST_NODE_TYPES.CA
 	/** Value */
 	v: TASTSchemaExpression;
 
-	/** If spread (rest) parameters */
+	/** If spread (rest) parameters) */
 	r: boolean;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		id: IDocumentRange
+	}
 }
 
 /**

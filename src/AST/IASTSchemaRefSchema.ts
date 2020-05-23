@@ -12,7 +12,7 @@
 
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
-import { IASTSchemaTypeParameterList } from "./IASTSchemaTypeParameters";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Reference to a schema

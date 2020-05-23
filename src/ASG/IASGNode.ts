@@ -22,9 +22,12 @@ export interface IASGNode<T extends ASG_TYPE = ASG_TYPE> {
 	/** Parent node */
 	parent?: IASGNode;
 
-	/** Symbol identifier */
-	id?: string;
-
 	/** Other nodes that reference this node */
 	refs: Array<IASGNode>;
+
+	/** Node description (eg. parsed from a comment) */
+	description?: string;
+
+	/** Additional long description (eg. parsed from a comment) */
+	longDescription?: string;
 }

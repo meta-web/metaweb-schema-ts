@@ -13,6 +13,7 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Struct value node
@@ -20,5 +21,11 @@ import { TASTSchemaExpression } from "./TASTSchemaExpression";
 export interface IASTSchemaValueStruct extends IASTSchemaNode<AST_NODE_TYPES.VALUE_STRUCT> {
 	p: {
 		[K: string]: TASTSchemaExpression;
+	}
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange;
+		p: { [K: string]: IDocumentRange };
 	}
 }

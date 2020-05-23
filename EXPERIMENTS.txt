@@ -1,0 +1,435 @@
+-- META Schema
+
+namespace MyService {
+
+	schema Customer(
+		id: Integer
+	) {
+
+		let customer = CustomerModel(@id);
+
+		action SetName(
+			name: String
+		) {
+			customer.name#set(name);
+			customer#save();
+			// Save action can also wait for datasource to refresh
+			// So after this call, the "customer" variable will contain
+			// refreshd data
+		}
+
+		return customer;
+
+	}
+
+}
+
+-- JS Code
+
+// Get customer
+const customer = MyService.Customer(42);
+
+// Update customer
+await customer.SetName("Jack");
+
+// Customer name is already updated, we have up-to-date record, and data from server
+customer.name == "jack"; // => true
+customer.lastModified; // is refreshed automatically
+
+-- Or we can map this service to a REST API
+
+GET /customer/<id>
+	-> MyService.Customer(42)
+
+PUT /customer/<id>/name 
+	-> MyService.Customer(42).SetName(<body.name>)
+
+-- Or we can map it universally
+GET /MyService/<schema>?params...
+	-> MyService.<schema>(query.params)
+
+POST /MyService/<schema>/<action>
+	-> MyService.<schema>(query.params).<action>(<body>)
+
+
+---
+
+// This will act only as a function container with procedural code
+schema ActionOnlySchema {
+
+	let good = false;
+
+	action SetMe(
+		newValue: Number
+	) {
+		
+		if (newValue == 42) {
+			set good = true;
+		} else {
+			set good = false;
+		}
+
+	}
+
+	return res;
+
+}
+
+-- JS
+
+const x = ActionOnlySchema();
+x.SetMe(42);
+x == true;
+
+x.SetMe(32);
+x == false;
+
+// or with fluent API
+const result = ActionOnlySchema().SetMe(42) == true;
+
+--- proper simplified version of this example, of course shall be ---
+
+schema MySchema(
+	value: Number	
+) {
+	return value == 42 ? true : false;
+}
+
+-- JS
+
+const result = MySchema(42) == true;
+
+
+--- File IO example ---
+
+schema FileExample(
+	filename: String
+) {
+
+	let contents = IO.File(filename);
+
+	action set(
+		newContents: String
+	) {
+		contents#write(newContents);
+	}
+
+	action append(
+		somethingNew: String
+	) {
+		contents#append(somethingNew);
+	}
+
+	return contents;
+
+}
+
+
+--- State machine example ---
+
+schema State {
+
+	let state phase: String = "selectLanguage";
+	let state language: String = null;
+	let state coins: Number = null;
+
+	return {
+		phase: phase,
+		language: language,
+		coins: coins
+	};
+
+	action SetPhase(newPhase: String) {
+		set @phase = @newPhase;
+	}
+
+	action SetLang(newLang: String) {
+		set @language = @newLang;
+	}
+
+	action SetCoins(coins: Number) {
+		set @coins = @coins;
+	}
+
+}
+
+schema SelectLang(state: State) {
+
+	action OnKeyPress(
+		key: String
+	) {
+		when {
+			(@key == "1") => {
+				invoke @state#SetLang("en");
+				invoke @state#SetPhase("enterCoins");
+			};
+			(@key == "2") => {
+				invoke @state#SetLang("cs");
+				invoke @state#SetPhase("enterCoins");
+			}
+		};
+	}
+
+	return @state;
+
+}
+
+schema EnterCoins(state: State) {
+
+	action OnCoin(
+		amount: Number
+	) {
+		state#SetCoins(@state.coins + @amount);
+
+		if (@state.coins > 0) {
+			invoke @state#SetPhase("confirm");	
+		}
+	}
+
+	return state;
+
+}
+
+schema Confirm(state: State) {
+
+	action OnKeyPress {
+		invoke @state#SetPhase("selectLanguage");	
+	}
+
+	return state;
+
+}
+
+schema CoinMachine {
+
+	let state = State();
+
+	return when {
+		(state.phase == "selectLanguage") => SelectLang(state);
+		(state.phase == "enterCoins") => EnterCoins(state);
+		(state.phase == "confirm") => Confirm(state);
+	}
+
+}
+
+// Coin machine output is automatically updated when anything changes
+// So UI can listen to it and update screen automatically
+
+
+
+---
+
+
+--- State machine example ---
+
+schema State {
+
+	let state phase: String = "selectLanguage";
+	let state language: String = null;
+	let state coins: Number = null;
+
+	return {
+		phase: phase,
+		language: language,
+		coins: coins
+	};
+
+	action SetPhase(newPhase: String) {
+		set @phase = @newPhase;
+	}
+
+	action SetLang(newLang: String) {
+		set @language = @newLang;
+	}
+
+	action SetCoins(coins: Number) {
+		set @coins = @coins;
+	}
+
+}
+
+schema SelectLang(state: State) {
+
+	action OnKeyPress(
+		key: String
+	) {
+		when {
+			(@key == "1") => {
+				invoke @state#SetLang("en");
+				invoke @state#SetPhase("enterCoins");
+			};
+			(@key == "2") => {
+				invoke @state#SetLang("cs");
+				invoke @state#SetPhase("enterCoins");
+			}
+		};
+	}
+
+	return @state;
+
+}
+
+schema EnterCoins(state: State) {
+
+	action OnCoin(
+		amount: Number
+	) {
+		state#SetCoins(@state.coins + @amount);
+
+		if (@state.coins > 0) {
+			invoke @state#SetPhase("confirm");	
+		}
+	}
+
+	return state;
+
+}
+
+schema Confirm(state: State) {
+
+	action OnKeyPress {
+		invoke @state#SetPhase("selectLanguage");	
+	}
+
+	return state;
+
+}
+
+schema CoinMachine {
+
+	let keyboard = IO.MatrixKeyboard(
+		interface: IO.I2C(),
+		onInput: this#OnKeyPress
+	);
+
+	let coinAcceptor = IO.Coin(
+		pin: 8,
+		onInput: this#OnCoin
+	)
+
+	let state : {
+		phase: String;
+		language: String;
+		coins: Number;
+		acceptCoins: Boolean;
+	} = {
+		phase: "selectLanguage",
+		language: null,
+		coins: 0,
+		acceptCoins: false
+	};
+
+	action OnKeyPress {
+		set state = when {
+			// Select EN
+			(state.phase == "selectLanguage" and keyboard.key == "1") => state + {
+				phase: "enterCoins",
+				language: "en",
+				acceptCoins: true
+			};
+			// Select CZ
+			(state.phase == "selectLanguage" and keyboard.key == "2") => state + {
+				phase: "enterCoins",
+				language: "cs",
+				acceptCoins: true
+			};
+			// Confirm payment and reset state
+			(state.phase == "confirm") => {
+				phase: "selectLanguage",
+				language: null,
+				coins: 0,
+				acceptCoins: false
+			};
+			// Default, do nothing
+			(true) => state;
+		};
+	}
+
+	action OnCoin {
+		let newCoins = state.coins + coinAcceptor.amount;
+
+		set state = when {
+			// Update amount
+			(state.phase == "enterCoins") => state + {
+				coins: newCoins
+			} + when {
+				// Move to next phase if have enough coins
+				(newCoins > 1000) => {
+					phase: "confirm",
+					acceptCoins: false
+				};
+				// Otherwise just update amount
+				(true) => {};
+			};
+			// Otherwise do nothing
+			(true) => state;
+		};
+	}
+
+	return IO.Display(
+		text: when {
+			(state.phase == "selectLanguage") => [
+				"Select language:",
+				"1 = EN, 2 = CZ"
+			];
+			(state.phase == "enterCoins") => [
+				"Enter coins:",
+				`Credit: ${state.coins}`
+			];
+			(state.phase == "confirm") => [
+				"Confirm payment:",
+				"Press any key."
+			];
+		}
+	);
+
+}
+
+schema ModelText(
+	value: String;
+	required: Boolean;
+	pattern: RegExp;
+	readOnly: Boolean;
+) {
+
+	let value = @value;
+	let { @value } touched = false;
+
+	const propagate readOnly = inherit<Boolean>(readOnly) || @readOnly;
+	const modified = value != @value;
+
+	let valid =
+		when {
+			(@required) => value != null && !String.Empty(value: value);
+			(true) => true;
+		}
+		&&
+		when {
+			(@pattern != null) => String.Match(value: value, pattern: @pattern);
+			(true) => true;
+		};
+
+	return {
+		value: value,
+		valid: valid,
+		modified: modified,
+		touched: touched
+	};
+
+	action set(newValue: String) {
+		set value = newValue;
+		set touched = true;
+	}
+
+	action reset() {
+		set value = @value;
+		set touched = false;
+	}
+
+}
+
+environment "envName" {
+	import ...;
+	use ...;
+	namespace ...;
+}

@@ -19,10 +19,14 @@ import { IASGDeclarationType } from "./IASGDeclarationType";
  * ASG Namespace
  */
 export interface IASGNamespace extends IASGNode<ASG_TYPE.NAMESPACE> {
+	/** Symbol identifier */
+	id: string;
+
 	/** Nested namespaces */
-	namespaces: {
-		[K: string]: IASGNamespace;
-	}
+	namespaces: Array<IASGNamespace>;
+
+	/** Uses */
+	uses: Array<IASGNode<ASG_TYPE.DL_USE>>;
 
 	/** Types */
 	types: {
@@ -42,6 +46,6 @@ export interface IASGNamespace extends IASGNode<ASG_TYPE.NAMESPACE> {
 	/** Parse info */
 	parseInfo?: {
 		/** Position of identifiers where namespace was declared. */
-		id: Array<IDocumentRange>
+		id: IDocumentRange
 	}
 }

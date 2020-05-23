@@ -14,6 +14,7 @@ import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
 import { TASTSchemaTypeExpression } from "./TASTSchemaTypeExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Variable definition
@@ -39,4 +40,10 @@ export interface IASTSchemaVariable extends IASTSchemaNode<AST_NODE_TYPES.VARIAB
 
 	/** If a variable is propagated */
 	pr: boolean;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		id: IDocumentRange
+	}
 }

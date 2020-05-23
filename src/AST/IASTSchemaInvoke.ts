@@ -14,8 +14,6 @@ import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { ISchemaCallArgumentList } from "./IASTSchemaCallArguments";
 import { IASTSchemaRefAction } from "./IASTSchemaRefAction";
-import { TASTSchemaExpression } from "./TASTSchemaExpression";
-import { IASTSchemaTypeParameterList } from "./IASTSchemaTypeParameters";
 
 /**
  * Schema invoke statement

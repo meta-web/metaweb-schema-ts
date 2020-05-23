@@ -42,10 +42,10 @@ export enum AST_NODE_TYPES {
 	CONDITION = "cn",
 	CONDITION_TYPE = "ct",
 	VARIABLE = "v",
-	UPDATE = "u",
+	SET = "st",
 	INVOKE = "in",
 	RETURN = "r",
-	CONST = "c",
+	SCALAR = "c",
 	VALUE_LIST = "vl",
 	VALUE_STRUCT = "vs"
 }
@@ -82,10 +82,10 @@ export const NODE_TYPE_LABELS = {
 	[AST_NODE_TYPES.CONDITION]: "cond",
 	[AST_NODE_TYPES.CONDITION_TYPE]: "cond_type",
 	[AST_NODE_TYPES.VARIABLE]: "var",
-	[AST_NODE_TYPES.UPDATE]: "update",
+	[AST_NODE_TYPES.SET]: "set",
 	[AST_NODE_TYPES.INVOKE]: "invoke",
 	[AST_NODE_TYPES.RETURN]: "return",
-	[AST_NODE_TYPES.CONST]: "const",
+	[AST_NODE_TYPES.SCALAR]: "scalar",
 	[AST_NODE_TYPES.VALUE_LIST]: "val_list",
 	[AST_NODE_TYPES.VALUE_STRUCT]: "val_struct"
 };

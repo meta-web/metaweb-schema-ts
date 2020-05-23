@@ -12,9 +12,8 @@
 
 import { IASTSchemaRefParam } from "./IASTSchemaRefParam";
 import { IASTSchemaRefVariable } from "./IASTSchemaRefVariable";
-import { IASTSchemaVariable } from "./IASTSchemaVariable";
 import { IASTSchemaCall } from "./IASTSchemaCall";
-import { IASTSchemaConst } from "./IASTSchemaConst";
+import { IASTSchemaScalar } from "./IASTSchemaScalar";
 import { IASTSchemaLambda } from "./IASTSchemaLambda";
 import { IASTSchemaCondition } from "./IASTSchemaCondition";
 import { IASTSchemaRefProperty } from "./IASTSchemaRefProperty";
@@ -28,6 +27,6 @@ import { IASTSchemaRefAction } from "./IASTSchemaRefAction";
 /**
  * Schema expression nodes
  */
-export type TASTSchemaExpression = IASTSchemaConst|IASTSchemaValueList|IASTSchemaValueStruct|IASTSchemaRefAction
-	|IASTSchemaRefParam|IASTSchemaRefVariable|IASTSchemaVariable|IASTSchemaRefProperty|ISchemaRefTranslation|IASTSchemaRefSchema
+export type TASTSchemaExpression = IASTSchemaScalar|IASTSchemaValueList|IASTSchemaValueStruct|IASTSchemaRefAction
+	|IASTSchemaRefParam|IASTSchemaRefVariable|IASTSchemaRefProperty|ISchemaRefTranslation|IASTSchemaRefSchema
 	|IASTSchemaCall|IASTSchemaLambda|IASTSchemaCondition|IASTSchemaConditionType;

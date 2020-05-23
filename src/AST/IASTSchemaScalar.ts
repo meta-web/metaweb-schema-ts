@@ -13,19 +13,21 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { IASTSchemaRefType } from "./IASTSchemaRefType";
-
-/**
- * Possible constant value types
- */
-export type TASTSchemaConstValue = string|number|boolean|Date|Array<TASTSchemaConstValue>
-	|{ [K: string]: TASTSchemaConstValue, [K: number]: TASTSchemaConstValue };
+import { TScalarValue } from "../Shared/TScalarValue";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Constant definition
  */
-export interface IASTSchemaConst extends IASTSchemaNode<AST_NODE_TYPES.CONST> {
+export interface IASTSchemaScalar extends IASTSchemaNode<AST_NODE_TYPES.SCALAR> {
 	/** Constant type */
 	t: IASTSchemaRefType;
+
 	/** Value */
-	v: TASTSchemaConstValue
+	v: TScalarValue;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange
+	}
 }

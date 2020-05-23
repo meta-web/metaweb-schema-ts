@@ -11,6 +11,8 @@
  */
 
 import { IDocumentRange } from "./IDocumentRange";
+import { IDocumentLocation } from "./IDocumentLocation";
+import { ERROR_CODE } from "./ErrorCodes";
 
 /**
  * Error severity
@@ -20,6 +22,17 @@ export enum DOC_ERROR_SEVERITY {
 	WARNING = 2,
 	INFO = 3,
 	HINT = 4
+}
+
+/**
+ * Error related information item
+ */
+export interface IDocumentErrorRelatedInformation {
+	/** Document location */
+	location: IDocumentLocation;
+
+	/** Message */
+	message: string;
 }
 
 /**
@@ -33,8 +46,18 @@ export interface IDocumentError {
 	severity: DOC_ERROR_SEVERITY;
 
 	/** Error name */
-	name: string;
+	name: ERROR_CODE;
 
 	/** Error message - used for better error reporting */
 	message: string;
+
+	/** Related information */
+	relatedInformation?: Array<IDocumentErrorRelatedInformation>;
+}
+
+/**
+ * Map of errors to specific documents
+ */
+export interface IDocumentErrorMap {
+	[documentUri: string]: Array<IDocumentError>;
 }

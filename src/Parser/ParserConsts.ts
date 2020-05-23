@@ -29,7 +29,7 @@ export const keywords = {
 	inherit: "inherit",
 	action: "action",
 	override: "override",
-	update: "update",
+	set: "set",
 	invoke: "invoke",
 	return: "return",
 	fn: "fn",

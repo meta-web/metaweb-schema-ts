@@ -14,6 +14,7 @@ import { ASG_TYPE } from "./ASGNodeTypes";
 import { IASGNode } from "./IASGNode";
 import { IDocumentRange } from "../Shared/IDocumentRange";
 import { TASGTypeExpressionNode } from "./TASGTypeExpression";
+import { TTypeDescriptor } from "../Shared/ITypeDescriptor";
 
 /**
  * ASG type one of
@@ -22,6 +23,6 @@ export interface IASGTypeOneOf extends IASGNode<ASG_TYPE.TYPE_ONEOF> {
 	/** Sub types */
 	types: Array<TASGTypeExpressionNode>;
 
-	/** Resolved type descriptor @todo */
-	typeDesc: any;
+	/** Resolved type descriptor */
+	typeDesc: TTypeDescriptor;
 }

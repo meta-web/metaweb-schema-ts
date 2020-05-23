@@ -13,6 +13,7 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Reference to a schema action
@@ -23,4 +24,10 @@ export interface IASTSchemaRefAction extends IASTSchemaNode<AST_NODE_TYPES.REF_A
 
 	/** Referenced action identifier */
 	id: string;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		id: IDocumentRange
+	}
 }

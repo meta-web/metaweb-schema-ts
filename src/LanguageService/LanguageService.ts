@@ -20,6 +20,7 @@ import { IDocumentUpdateEvent } from "./IDocumentUpdateEvent";
 import { IASTSchemaNode } from "../AST/IASTSchemaNode";
 import * as IS from "../AST";
 import { AST_NODE_TYPES } from "../AST";
+import { Analyzer } from "../Analyzer/Analyzer";
 
 /**
  * Language service configuration
@@ -80,11 +81,11 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 			switch(node.n) {
 				case AST_NODE_TYPES.SCHEMA:
 					((node as IS.IASTSchema).g || []).forEach((n) => indexNode(n));
-					((node as IS.IASTSchema).p || []).forEach((n) => indexNode(n));
+					Object.keys((node as IS.IASTSchema).p).forEach((k) => indexNode((node as IS.IASTSchema).p[k]));
 					((node as IS.IASTSchema).b || []).forEach((n) => indexNode(n));
 					break;
 				case AST_NODE_TYPES.SCHEMA_ACTION:
-					((node as IS.IASTSchemaAction).p || []).forEach((n) => indexNode(n));
+					Object.keys((node as IS.IASTSchemaAction).p).forEach((k) => indexNode((node as IS.IASTSchemaAction).p[k]));
 					((node as IS.IASTSchemaAction).b || []).forEach((n) => indexNode(n));
 					break;
 				case AST_NODE_TYPES.CALL:
@@ -118,7 +119,7 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 					((node as IS.IASTSchemaInvoke).a || []).forEach((n) => indexNode(n));
 					break;
 				case AST_NODE_TYPES.LAMBDA:
-					((node as IS.IASTSchemaLambda).p || []).forEach((n) => indexNode(n));
+					Object.keys((node as IS.IASTSchemaLambda).p).forEach((k) => indexNode((node as IS.IASTSchemaLambda).p[k]));
 					indexNode((node as IS.IASTSchemaLambda).b);
 					break;
 				case AST_NODE_TYPES.NAMESPACE:
@@ -150,7 +151,7 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 					((node as IS.IASTSchemaTranslation).t || []).forEach((n) => indexNode(n));
 					break;
 				case AST_NODE_TYPES.TRANSLATION_TERM:
-					((node as IS.IASTSchemaTranslationTerm).p || []).forEach((n) => indexNode(n));
+					Object.keys((node as IS.IASTSchemaTranslationTerm).p).forEach((k) => indexNode((node as IS.IASTSchemaTranslationTerm).p[k]));
 					indexNode((node as IS.IASTSchemaTranslationTerm).v);
 					break;
 				case AST_NODE_TYPES.TYPE_ALLOF:
@@ -163,9 +164,9 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 				case AST_NODE_TYPES.TYPE_STRUCT:
 					Object.keys((node as IS.IASTSchemaTypeStruct).p).forEach((k) => indexNode((node as IS.IASTSchemaTypeStruct).p[k]));
 					break;
-				case AST_NODE_TYPES.UPDATE:
-					indexNode((node as IS.IASTSchemaUpdate).r);
-					indexNode((node as IS.IASTSchemaUpdate).v);
+				case AST_NODE_TYPES.SET:
+					indexNode((node as IS.IASTSchemaSet).r);
+					indexNode((node as IS.IASTSchemaSet).v);
 					break;
 				case AST_NODE_TYPES.VALUE_LIST:
 					((node as IS.IASTSchemaValueList).e || []).forEach((n) => indexNode(n));
@@ -193,6 +194,15 @@ export class LanguageService extends EventEmitter<"documentUpdate", IDocumentUpd
 	 * @param res Document report
 	 */
 	private analyzeDocument(res: IDocumentReport) : IDocumentReport {
+
+		Analyzer.addDocument(res.uri, res.documentNode);
+
+		// Add analyzer errors
+		const analyzerErrors = Analyzer.getDocumentErrors(res.uri);
+
+		for (let i = 0; i < analyzerErrors.length; i++) {
+			res.errors.push(analyzerErrors[i]);
+		}
 
 		return res;
 

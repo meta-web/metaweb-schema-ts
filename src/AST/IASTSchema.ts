@@ -13,10 +13,11 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { IASTSchemaGenericList } from "./IASTSchemaGenerics";
-import { IASTSchemaParamList } from "./IASTSchemaParams";
 import { IASTSchemaReturn } from "./IASTSchemaReturn";
 import { IASTSchemaVariable } from "./IASTSchemaVariable";
 import { IASTSchemaAction } from "./IASTSchemaAction";
+import { IASTSchemaParam } from "./IASTSchemaParams";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Schema
@@ -32,8 +33,16 @@ export interface IASTSchema extends IASTSchemaNode<AST_NODE_TYPES.SCHEMA> {
 	g: IASTSchemaGenericList;
 
 	/** Parameters */
-	p: IASTSchemaParamList;
+	p: {
+		[K: string]: IASTSchemaParam
+	};
 
 	/** Body expressions */
 	b: Array<IASTSchemaVariable|IASTSchemaAction|IASTSchemaReturn>;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		id: IDocumentRange
+	}
 }

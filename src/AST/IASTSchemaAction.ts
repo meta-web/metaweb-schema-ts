@@ -12,10 +12,11 @@
 
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
-import { IASTSchemaParamList } from "./IASTSchemaParams";
+import { IASTSchemaParam } from "./IASTSchemaParams";
 import { IASTSchemaVariable } from "./IASTSchemaVariable";
-import { IASTSchemaUpdate } from "./IASTSchemaUpdate";
+import { IASTSchemaSet } from "./IASTSchemaSet";
 import { IASTSchemaInvoke } from "./IASTSchemaInvoke";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Schema action definition
@@ -28,11 +29,19 @@ export interface IASTSchemaAction extends IASTSchemaNode<AST_NODE_TYPES.SCHEMA_A
 	cm: string;
 
 	/** Parameters */
-	p: IASTSchemaParamList;
+	p: {
+		[K: string]: IASTSchemaParam;
+	};
 
 	/** Override */
 	o: boolean;
 
 	/** Body expressions */
-	b: Array<IASTSchemaVariable|IASTSchemaUpdate|IASTSchemaInvoke>;
+	b: Array<IASTSchemaVariable|IASTSchemaSet|IASTSchemaInvoke>;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		id: IDocumentRange
+	}
 }

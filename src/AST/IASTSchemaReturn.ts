@@ -14,6 +14,7 @@ import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
 import { TASTSchemaTypeExpression } from "./TASTSchemaTypeExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Return statement definition
@@ -24,4 +25,10 @@ export interface IASTSchemaReturn extends IASTSchemaNode<AST_NODE_TYPES.RETURN> 
 
 	/** Value expression */
 	v: TASTSchemaExpression|null;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		keyword: IDocumentRange
+	}
 }

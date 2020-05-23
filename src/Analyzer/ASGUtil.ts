@@ -10,10 +10,10 @@
  * See LICENSE file distributed with this source code for more information.
  */
 
-import { IASGSearchScope } from "./IASGSearchScope";
-import { ASG_TYPE } from "./ASGNodeTypes";
-import { IASGNode } from "./IASGNode";
-import { IASGDocument } from "./IASGDocument";
+import { IASGSearchScope } from "../ASG/IASGSearchScope";
+import { ASG_TYPE } from "../ASG/ASGNodeTypes";
+import { IASGNode } from "../ASG/IASGNode";
+import { IASGDocument } from "../ASG/IASGDocument";
 
 export function ASGFindSymbol(scope: IASGSearchScope, symbol: string) {
 

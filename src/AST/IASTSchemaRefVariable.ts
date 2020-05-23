@@ -12,6 +12,7 @@
 
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Reference to an expression node
@@ -19,4 +20,10 @@ import { AST_NODE_TYPES } from "./ASTNodeTypes";
 export interface IASTSchemaRefVariable extends IASTSchemaNode<AST_NODE_TYPES.REF_VARIABLE> {
 	/** Referenced node ID */
 	r: string;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange,
+		r: IDocumentRange
+	}
 }

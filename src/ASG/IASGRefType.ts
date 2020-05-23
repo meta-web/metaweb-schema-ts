@@ -15,29 +15,33 @@ import { IASGNode } from "./IASGNode";
 import { IDocumentRange } from "../Shared/IDocumentRange";
 import { IASGNamespace } from "./IASGNamespace";
 import { TASGTypeExpressionNode } from "./TASGTypeExpression";
+import { TTypeDescriptor } from "../Shared/ITypeDescriptor";
 
 /**
  * ASG type reference
  */
 export interface IASGRefType extends IASGNode<ASG_TYPE.REF_TYPE> {
-	/** References namespace */
+	/** Referenced namespace */
 	namespaceDef: Array<string>;
 
 	/** Resolved namespace */
 	namespaceRef: IASGNamespace;
 
-	/** Type parameters @todo */
+	/** Type name */
+	typeName: string;
+
+	/** Type parameters */
 	params: Array<TASGTypeExpressionNode>;
 
-	/** Resolved type descriptor @todo */
-	typeDesc: any;
+	/** Resolved type descriptor */
+	typeDesc: TTypeDescriptor;
 
 	/** Parse info */
 	parseInfo?: {
 		/** Position of type definition */
-		id: IDocumentRange;
+		typeName: IDocumentRange;
 
 		/** Namespace IDs */
-		ns: Array<IDocumentRange>;
+		namespace: Array<IDocumentRange>;
 	}
 }

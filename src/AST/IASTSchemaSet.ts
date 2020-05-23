@@ -13,14 +13,20 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES, TASTSchemaExpression } from ".";
 import { IASTSchemaRefVariable } from "./IASTSchemaRefVariable";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
- * Schema update statement
+ * Schema set statement
  */
-export interface IASTSchemaUpdate extends IASTSchemaNode<AST_NODE_TYPES.UPDATE> {
+export interface IASTSchemaSet extends IASTSchemaNode<AST_NODE_TYPES.SET> {
 	/** Target variable node identifier */
 	r: IASTSchemaRefVariable;
 
-	/** Default value */
+	/** New value */
 	v: TASTSchemaExpression;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange;
+	}
 }

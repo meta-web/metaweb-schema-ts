@@ -13,6 +13,7 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
  * Reference to a property of another value
@@ -20,6 +21,12 @@ import { TASTSchemaExpression } from "./TASTSchemaExpression";
 export interface IASTSchemaRefProperty extends IASTSchemaNode<AST_NODE_TYPES.REF_PROPERTY> {
 	/** Referenced value */
 	v: TASTSchemaExpression;
+
 	/** Referenced index */
 	i: TASTSchemaExpression;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange
+	}
 }

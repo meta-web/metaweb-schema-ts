@@ -16,6 +16,7 @@ import { IParseContext } from "../IParseContext";
 import { IParseMatchRule } from "../IParseMatchRule";
 import { Parser } from "../Parser";
 import { DOC_ERROR_SEVERITY } from "../../Shared/IDocumentError";
+import { ERROR_CODE } from "../../Shared/ErrorCodes";
 
 /**
  * Parse function
@@ -318,7 +319,7 @@ export function expectOneOf(
 
 		Parser.addError(
 			DOC_ERROR_SEVERITY.ERROR,
-			"Unexpected token",
+			ERROR_CODE.UNEXPECTED_EOF,
 			`Expecting one of ${optionList.join(" | ")}, got '${token ? token.type : "EOF"}'.`
 		)
 

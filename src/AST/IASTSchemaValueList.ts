@@ -13,11 +13,17 @@
 import { IASTSchemaNode } from "./IASTSchemaNode";
 import { AST_NODE_TYPES } from "./ASTNodeTypes";
 import { TASTSchemaExpression } from "./TASTSchemaExpression";
+import { IDocumentRange } from "../Shared/IDocumentRange";
 
 /**
- * Variable definition
+ * List value node
  */
 export interface IASTSchemaValueList extends IASTSchemaNode<AST_NODE_TYPES.VALUE_LIST> {
 	/** List elements */
 	e: Array<TASTSchemaExpression>;
+
+	/** Parse info */
+	parseInfo?: {
+		range: IDocumentRange
+	}
 }
